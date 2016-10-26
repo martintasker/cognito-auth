@@ -1,4 +1,4 @@
-node_modules/*
-bower_components/*
-.tmp
-dist/*
+demo/node_modules/*
+demo/bower_components/*
+demo/.tmp
+demo/dist/*
