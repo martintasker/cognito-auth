@@ -1,0 +1,6 @@
+<form novalidate ng-submit="vm.logout()">
+  <div class="form-group">
+    <button class="btn btn-primary" ng-disabled="vm.interactionDisabled" type="submit">Logout</button>
+    <div class="btn btn-danger" ng-disabled="vm.interactionDisabled" ng-show="vm.enableDeregistration" ng-click="vm.deregister()">Deregister</div>
+  </div>
+</form>

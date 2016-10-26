@@ -1,0 +1,9 @@
+<div style="display:inline-block">
+  <div>
+    <user-login ng-show="!vm.isLoggedIn">
+    </user-login>
+    <user-logout ng-show="vm.isLoggedIn">
+    </user-logout>
+  </div>
+  <div ng-show="vm.errorMessage" style="color:red">{{vm.errorMessage}}</div>
+</div>

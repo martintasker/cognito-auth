@@ -1,0 +1,114 @@
+body {
+  padding: 0;
+  font-size: 180%;
+  background-color: #eeeeff;
+}
+.header {
+  margin: 0 auto;
+  padding: 10px 0px;
+  margin-bottom: 10px;
+  padding: 25px auto;
+}
+.footer {
+  margin: 0 auto;
+  padding: 10px 0px;
+  margin-top: 10px;
+  padding: 25px auto;
+}
+.container {
+  margin: 0 auto;
+  padding: 0px 0px;
+}
+.row {
+  background-color: white;
+  margin: 5px 0;
+  padding: 8px;
+}
+b,
+dt,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+thead {
+  color: #553311;
+  font-weight: bold;
+}
+a {
+  color: #4444aa;
+  font-weight: bold;
+}
+label {
+  font-size: 150%;
+}
+thead {
+  font-weight: bold;
+}
+p.prompt {
+  text-color: #888888;
+  font-style: italic;
+  font-size: 95%;
+}
+.btn-primary-outline {
+  background-color: white;
+  text-color: blue;
+  border-color: blue;
+}
+.btn-primary-outline:hover {
+  background-color: #eeeeff;
+}
+.ng-invalid.ng-touched {
+  color: red;
+  border-color: red;
+  background-color: #ffffcc;
+}
+.form-error {
+  color: #cc4444;
+  font-weight: bold;
+}
+input[type=checkbox] {
+  width: 30px;
+  height: 30px;
+}
+input[type=date],
+input[type=text] {
+  font-size: 100%;
+  color: black;
+}
+input[type=radio] {
+  width: 30px;
+  height: 30px;
+}
+.btn {
+  font-weight: bold;
+}
+.btn-warning,
+.btn-success {
+  color: black;
+  border: 1px solid black;
+  font-weight: bold;
+}
+.table-borderless tbody tr td {
+  border: none;
+}
+.content {
+  margin: 0 auto;
+  padding: 0px 5px;
+}
+.errorMessage {
+  font-weight: bold;
+  color: #cc4444;
+}
+.successMessage {
+  font-weight: bold;
+  color: #226622;
+}
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #600;
+  padding: 0.2em 0;
+}

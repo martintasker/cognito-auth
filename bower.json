@@ -1,0 +1,27 @@
+{
+  "name": "cognito-angular-demo",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "bootstrap": "^3.2.0",
+    "angular-route": "^1.4.0",
+    "ng-file-upload": "^12.0.4",
+    "aws-sdk": "aws-sdk-js#^2.4.7",
+    "aws-cognito-sdk": "https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/aws-cognito-sdk.js",
+    "amazon-cognito-identity": "https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.4.0"
+  },
+  "appPath": "app",
+  "moduleName": "cognito-angular-demo",
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "less/bootstrap.less",
+        "dist/css/bootstrap.css",
+        "dist/js/bootstrap.js"
+      ]
+    }
+  }
+}

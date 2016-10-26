@@ -1,0 +1,14 @@
+<div class="row">
+  <form class="form-horizontal" novalidate>
+    <div class="form-group">
+      <label class="col-xs-4 control-label" for="file">{{vm.title}}</label>
+      <div class="col-xs-8">
+        <div ng-show="!vm.isLoggedIn()" class="btn btn-default btn-lg">Log in to select file and upload</div>
+        <div ng-show="vm.isLoggedIn()" class="btn btn-warning btn-lg" ngf-select="vm.upload($file)">Choose File and Upload</div>
+        <p ng-show="vm.errorMessage" class="errorMessage">{{vm.errorMessage}}</p>
+        <p ng-show="vm.successMessage" class="successMessage">{{vm.successMessage}}</p>
+        <p ng-show="vm.uploaded">Check <a href="{{vm.target}}" target="_blank">here</a> to verify this is what you expected.</p>
+      </div>
+    </div>
+  </form>
+</div>
