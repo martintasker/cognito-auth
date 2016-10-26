@@ -1,0 +1,20 @@
+{
+  "name": "cognito-auth",
+  "description": "Angular auth code for Cognito",
+  "main": "dist/cognito-auth.js",
+  "authors": [
+    "Martin Tasker"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "aws",
+    "cognito",
+    "angular"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "demo/*",
+    "webpack.config.js"
+  ]
+}
