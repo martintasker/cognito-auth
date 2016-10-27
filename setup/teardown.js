@@ -20,6 +20,9 @@ var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 Promise.resolve()
   .then(function() {
+    return deleteUserPoolClient(settings.get('userPoolId'), settings.get('applicationId'));
+  })
+  .then(function() {
     return deleteUserPool(settings.get('userPoolId'));
   })
   .then(deleteFiles)
@@ -55,7 +58,6 @@ function deleteFiles() {
     }, function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       console.log("deleteObjects -> %j", data);
       return resolve(data);
@@ -71,9 +73,24 @@ function deleteUserPool(userPoolId) {
     }, function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       console.log("deleteUserPool -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function deleteUserPoolClient(userPoolId, userPoolClientId) {
+  console.log("deleteUserPoolClient", userPoolClientId);
+  return new Promise(function(resolve, reject) {
+    cognitoIdentityServiceProvider.deleteUserPoolClient({
+      UserPoolId: userPoolId,
+      ClientId: userPoolClientId,
+    }, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("deleteUserPoolClient -> %j", data);
       return resolve(data);
     });
   });

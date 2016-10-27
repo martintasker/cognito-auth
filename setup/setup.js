@@ -20,6 +20,7 @@ Promise.resolve()
   .then(createBucket)
   .then(writeFile)
   .then(createUserPool)
+  .then(createUserPoolClient)
   .catch(function(reason) {
     console.log("problem: %j", reason);
   });
@@ -29,7 +30,6 @@ function createBucket() {
     bucket.createBucket(function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       console.log("createBucket -> %j", data);
       return resolve(data);
@@ -45,7 +45,6 @@ function writeFile() {
     }, function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       console.log("upload -> %j", data);
       return resolve();
@@ -56,7 +55,7 @@ function writeFile() {
 function createUserPool() {
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPool-property
-    PoolName: 'cognito-auth test',
+    PoolName: config.USER_POOL_NAME,
     AliasAttributes: ['email'], // sign in with email ID: this is what cognito-auth supports currently; 'phone_number' is also interesting
     AutoVerifiedAttributes: ['email'], // AWS recommends this setting, if the corresponding AliasAttribute is used
     LambdaConfig: {
@@ -77,11 +76,35 @@ function createUserPool() {
     cognitoIdentityServiceProvider.createUserPool(params, function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       // console.log("createUserPool -> %j", data);
       console.log("createUserPool -> id:", data.UserPool.Id);
       settings.set('userPoolId', data.UserPool.Id);
+      return resolve();
+    });
+  });
+}
+
+function createUserPoolClient() {
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolClient-property
+    // in AWS console-speak, this is an "application" for a user pool; in API-speak, it's a "client"
+    ClientName: config.APP_NAME,
+    UserPoolId: settings.get('userPoolId'),
+    ExplicitAuthFlows: ['ADMIN_NO_SRP_AUTH'], // possible future cognito-auth feature: support SRP auth
+    GenerateSecret: false, // by requirement, since we generate temporary secrets on the fly at login time
+    ReadAttributes: ['email'], // see http://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+    RefreshTokenValidity: 0, // days, default 30; see http://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
+    // WriteAttributes: [], // required for profile maintenance
+  };
+  return new Promise(function(resolve, reject) {
+    cognitoIdentityServiceProvider.createUserPoolClient(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("createUserPoolClient -> %j", data);
+      console.log("createUserPoolClient -> id:", data.UserPoolClient.ClientId);
+      settings.set('applicationId', data.UserPoolClient.ClientId);
       return resolve();
     });
   });
