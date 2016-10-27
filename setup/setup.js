@@ -3,6 +3,7 @@
 var AWS = require('aws-sdk');
 
 var config = require('./lib/config');
+var settings = require('./lib/settings');
 
 AWS.config.region = config.MY_REGION;
 
@@ -80,6 +81,7 @@ function createUserPool() {
       }
       // console.log("createUserPool -> %j", data);
       console.log("createUserPool -> id:", data.UserPool.Id);
+      settings.set('userPoolId', data.UserPool.Id);
       return resolve();
     });
   });

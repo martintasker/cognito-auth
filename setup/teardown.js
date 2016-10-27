@@ -5,6 +5,7 @@
 var AWS = require('aws-sdk');
 
 var config = require('./lib/config');
+var settings = require('./lib/settings');
 
 AWS.config.region = config.MY_REGION;
 
@@ -19,7 +20,7 @@ var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 Promise.resolve()
   .then(function() {
-    return deleteUserPool("eu-west-1_CNmiiZrZF");
+    return deleteUserPool(settings.get('userPoolId'));
   })
   .then(deleteFiles)
   .then(deleteBucket)
@@ -64,7 +65,6 @@ function deleteFiles() {
 
 function deleteUserPool(userPoolId) {
   console.log("deleteUserPool", userPoolId);
-
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.deleteUserPool({
       UserPoolId: userPoolId
