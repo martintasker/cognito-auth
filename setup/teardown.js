@@ -14,35 +14,40 @@ var bucket = new AWS.S3({
 });
 
 Promise.resolve()
-  .then(createBucket)
-  .then(writeFile)
+  .then(deleteFiles)
+  .then(deleteBucket)
   .catch(function(reason) {
     console.log("problem: %j", reason);
   });
 
-function createBucket() {
+function deleteBucket() {
   return new Promise(function(resolve, reject) {
-    bucket.createBucket(function(err, data) {
+    bucket.deleteBucket(function(err, data) {
       if (err) {
         reject(err);
       }
-      console.log("createBucket -> %j", data);
+      console.log("deleteBucket -> %j", data);
       resolve(data);
     });
   });
 }
 
-function writeFile() {
+function deleteFiles() {
   return new Promise(function(resolve, reject) {
-    bucket.upload({
-      Key: config.TEST_FILE_NAME,
-      Body: 'the quick brown fox jumps over the lazy dog'
+    // note that deleteObjects() does not take '*' as Key
+    bucket.deleteObjects({
+      Delete: {
+        Objects: [{
+          Key: config.TEST_FILE_NAME,
+        }],
+        Quiet: false,
+      }
     }, function(err, data) {
       if (err) {
         reject(err);
       }
-      console.log("upload -> %j", data);
-      resolve();
+      console.log("deleteObjects -> %j", data);
+      resolve(data);
     });
   });
 }
