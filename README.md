@@ -122,6 +122,7 @@ Useful additional pointers:
 * [Building Serverless Apps with AWS Lambda](https://auth0.com/blog/building-serverless-apps-with-aws-lambda/) (auth0)
 * [Authentication with Amazon Cognito in the Browser](https://blogs.aws.amazon.com/javascript/post/Tx1F7FO6GDAIXD3/Authentication-with-Amazon-Cognito-in-the-Browser)
 * [configuring the SDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/browser-configuring.html)
+* [using WebPack with Amazon Cognito Identity SDK for JavaScript](https://aws.amazon.com/blogs/mobile/using-webpack-with-the-amazon-cognito-identity-sdk-for-javascript/)
 
 ## Principles
 
