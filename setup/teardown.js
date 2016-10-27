@@ -1,5 +1,7 @@
 'use strict';
 
+'HANDLE WITH CARE: if you use this after you\'ve set up and got users, then you\'ll delete them and their data!!';
+
 var AWS = require('aws-sdk');
 
 var config = require('./lib/config');
@@ -13,21 +15,28 @@ var bucket = new AWS.S3({
   }
 });
 
+var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+
 Promise.resolve()
+  .then(function() {
+    return deleteUserPool("eu-west-1_CNmiiZrZF");
+  })
   .then(deleteFiles)
   .then(deleteBucket)
   .catch(function(reason) {
     console.log("problem: %j", reason);
-  });
+  })
+;
 
 function deleteBucket() {
   return new Promise(function(resolve, reject) {
     bucket.deleteBucket(function(err, data) {
       if (err) {
-        reject(err);
+        return reject(err);
+        return;
       }
       console.log("deleteBucket -> %j", data);
-      resolve(data);
+      return resolve(data);
     });
   });
 }
@@ -44,10 +53,28 @@ function deleteFiles() {
       }
     }, function(err, data) {
       if (err) {
-        reject(err);
+        return reject(err);
+        return;
       }
       console.log("deleteObjects -> %j", data);
-      resolve(data);
+      return resolve(data);
+    });
+  });
+}
+
+function deleteUserPool(userPoolId) {
+  console.log("deleteUserPool", userPoolId);
+
+  return new Promise(function(resolve, reject) {
+    cognitoIdentityServiceProvider.deleteUserPool({
+      UserPoolId: userPoolId
+    }, function(err, data) {
+      if (err) {
+        return reject(err);
+        return;
+      }
+      console.log("deleteUserPool -> %j", data);
+      return resolve(data);
     });
   });
 }
