@@ -1,5 +1,11 @@
 'use strict';
 
+var settings = {
+  "userPoolId": "eu-west-1_ffLnxTYMT",
+  "applicationId": "7tdtigfomm7106g0vpv0lcpftf",
+  "identityPoolId": "eu-west-1:e76fb2d3-cdbf-4d03-9062-862b997f765a",
+};
+
 angular.module('demoApp', [
   'ngFileUpload',
   'mpt.cognito-auth'
@@ -7,10 +13,9 @@ angular.module('demoApp', [
 
 .constant('CognitoAuthConfig', {
   AWS_REGION: 'eu-west-1',
-  AWS_USER_POOL_ID: 'eu-west-1_QwNyuBilG',
-  // note: FBEmmAdminAuth pre-signup lambda prevents arbitrary registration into above user pool
-  AWS_APP_ID: '66m8segbilu6jmbvc8fptl1lmd',
-  AWS_ID_POOL_ID: 'eu-west-1:2f344f65-d141-4c9f-9e1c-ea3ce86fcbd7',
+  AWS_USER_POOL_ID: settings.userPoolId,
+  AWS_APP_ID: settings.applicationId,
+  AWS_ID_POOL_ID: settings.identityPoolId,
 })
 
 ;
