@@ -5,12 +5,12 @@ var AWS = require('aws-sdk');
 var config = require('./lib/config');
 var settings = require('./lib/settings');
 
-AWS.config.region = config.MY_REGION;
+AWS.config.region = config.REGION;
 
 var bucket = new AWS.S3({
   params: {
     Bucket: config.BUCKET_NAME,
-    region: config.BUCKET_REGION,
+    region: config.REGION,
   }
 });
 
@@ -139,7 +139,7 @@ function createIdentityPool() {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#createIdentityPool-property
     IdentityPoolName: config.POOL_NAME,
     CognitoIdentityProviders: [{
-      ProviderName: 'cognito-idp.' + config.MY_REGION + '.amazonaws.com/' + settings.get('userPoolId'),
+      ProviderName: 'cognito-idp.' + config.REGION + '.amazonaws.com/' + settings.get('userPoolId'),
       ClientId: settings.get('applicationId'),
     }],
     AllowUnauthenticatedIdentities: false, // for now

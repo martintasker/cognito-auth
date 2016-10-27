@@ -5,12 +5,12 @@ var AWS = require('aws-sdk');
 var config = require('./lib/config');
 var settings = require('./lib/settings');
 
-AWS.config.region = config.MY_REGION;
+AWS.config.region = config.REGION;
 
 var bucket = new AWS.S3({
   params: {
     Bucket: config.BUCKET_NAME,
-    region: config.BUCKET_REGION,
+    region: config.REGION,
   }
 });
 
