@@ -16,18 +16,28 @@ var bucket = new AWS.S3({
 
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
+var amazonIAM = new AWS.IAM();
 
 Promise.resolve()
+  // create a bucket, and send a test file to the bucket
   .then(createBucket)
   .then(writeFile)
+  // create a user pool, a client app for it, and an identity pool for both of them
   .then(createUserPool)
   .then(createUserPoolClient)
   .then(createIdentityPool)
+  // create auth role, then attach it to the identity pool
+  .then(createAuthRole)
+  .then(attachAuthRole)
+  // error catch-all
   .catch(function(reason) {
     console.log("problem: %j", reason);
   });
 
 function createBucket() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   return new Promise(function(resolve, reject) {
     bucket.createBucket(function(err, data) {
       if (err) {
@@ -40,6 +50,9 @@ function createBucket() {
 }
 
 function writeFile() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   return new Promise(function(resolve, reject) {
     bucket.upload({
       Key: config.TEST_FILE_NAME,
@@ -55,6 +68,9 @@ function writeFile() {
 }
 
 function createUserPool() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPool-property
     PoolName: config.USER_POOL_NAME,
@@ -88,6 +104,9 @@ function createUserPool() {
 }
 
 function createUserPoolClient() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolClient-property
     // in AWS console-speak, this is an "application" for a user pool; in API-speak, it's a "client"
@@ -113,6 +132,9 @@ function createUserPoolClient() {
 }
 
 function createIdentityPool() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#createIdentityPool-property
     IdentityPoolName: config.POOL_NAME,
@@ -135,4 +157,52 @@ function createIdentityPool() {
       return resolve(data);
     });
   });
+}
+
+function createAuthRole() {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  var policy = {
+    Version: '2012-10-17',
+    Statement: [{
+      Effect: "Allow",
+      Action: "sts:AssumeRoleWithWebIdentity",
+      Principal: {
+        Federated: "cognito-identity.amazonaws.com"
+      },
+      Condition: {
+        StringEquals: {
+          "cognito-identity.amazonaws.com:aud": settings.identityPoolId,
+        },
+        'ForAnyValue:StringLike': {
+          "cognito-identity.amazonaws.com:amr": "authenticated"
+        }
+      }
+    }]
+  };
+  var policyJson = JSON.stringify(policy, null, 2);
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
+    RoleName: config.AUTH_ROLE_NAME,
+    AssumeRolePolicyDocument: policyJson,
+  };
+  return new Promise(function(resolve, reject) {
+    amazonIAM.createRole(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      // console.log("createRole -> %j", data);
+      console.log("createRole -> id:", data.Role.RoleId);
+      settings.set('authRoleId', data.Role.RoleId);
+      return resolve(data);
+    });
+  });
+}
+
+function attachAuthRole() {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  return Promise.resolve();
 }

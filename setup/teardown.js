@@ -18,8 +18,12 @@ var bucket = new AWS.S3({
 
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
+var amazonIAM = new AWS.IAM();
 
 Promise.resolve()
+  .then(function() {
+    return deleteRole();
+  })
   .then(function() {
     return deleteIdentityPool(settings.get('identityPoolId'));
   })
@@ -36,6 +40,9 @@ Promise.resolve()
   });
 
 function deleteBucket() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   return new Promise(function(resolve, reject) {
     bucket.deleteBucket(function(err, data) {
       if (err) {
@@ -49,6 +56,9 @@ function deleteBucket() {
 }
 
 function deleteFiles() {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   return new Promise(function(resolve, reject) {
     // note that deleteObjects() does not take '*' as Key
     bucket.deleteObjects({
@@ -69,6 +79,9 @@ function deleteFiles() {
 }
 
 function deleteUserPool(userPoolId) {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   console.log("deleteUserPool", userPoolId);
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.deleteUserPool({
@@ -84,6 +97,9 @@ function deleteUserPool(userPoolId) {
 }
 
 function deleteUserPoolClient(userPoolId, userPoolClientId) {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   console.log("deleteUserPoolClient", userPoolClientId);
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.deleteUserPoolClient({
@@ -100,6 +116,9 @@ function deleteUserPoolClient(userPoolId, userPoolClientId) {
 }
 
 function deleteIdentityPool(identityPoolId) {
+  if (!config.phase.pools) {
+    return Promise.resolve();
+  }
   console.log("deleteIdentityPool", identityPoolId);
   return new Promise(function(resolve, reject) {
     cognitoIdentity.deleteIdentityPool({
@@ -109,6 +128,24 @@ function deleteIdentityPool(identityPoolId) {
         return reject(err);
       }
       console.log("deleteIdentityPool -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function deleteRole() {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  var params = {
+    RoleName: config.AUTH_ROLE_NAME,
+  };
+  return new Promise(function(resolve, reject) {
+    amazonIAM.deleteRole(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("deleteRole -> %j", data);
       return resolve(data);
     });
   });
