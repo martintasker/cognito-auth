@@ -17,8 +17,12 @@ var bucket = new AWS.S3({
 });
 
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+var cognitoIdentity = new AWS.CognitoIdentity();
 
 Promise.resolve()
+  .then(function() {
+    return deleteIdentityPool(settings.get('identityPoolId'));
+  })
   .then(function() {
     return deleteUserPoolClient(settings.get('userPoolId'), settings.get('applicationId'));
   })
@@ -29,8 +33,7 @@ Promise.resolve()
   .then(deleteBucket)
   .catch(function(reason) {
     console.log("problem: %j", reason);
-  })
-;
+  });
 
 function deleteBucket() {
   return new Promise(function(resolve, reject) {
@@ -91,6 +94,21 @@ function deleteUserPoolClient(userPoolId, userPoolClientId) {
         return reject(err);
       }
       console.log("deleteUserPoolClient -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function deleteIdentityPool(identityPoolId) {
+  console.log("deleteIdentityPool", identityPoolId);
+  return new Promise(function(resolve, reject) {
+    cognitoIdentity.deleteIdentityPool({
+      IdentityPoolId: identityPoolId,
+    }, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("deleteIdentityPool -> %j", data);
       return resolve(data);
     });
   });

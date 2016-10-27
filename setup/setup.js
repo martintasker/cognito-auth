@@ -15,12 +15,14 @@ var bucket = new AWS.S3({
 });
 
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+var cognitoIdentity = new AWS.CognitoIdentity();
 
 Promise.resolve()
   .then(createBucket)
   .then(writeFile)
   .then(createUserPool)
   .then(createUserPoolClient)
+  .then(createIdentityPool)
   .catch(function(reason) {
     console.log("problem: %j", reason);
   });
@@ -47,7 +49,7 @@ function writeFile() {
         return reject(err);
       }
       console.log("upload -> %j", data);
-      return resolve();
+      return resolve(data);
     });
   });
 }
@@ -80,7 +82,7 @@ function createUserPool() {
       // console.log("createUserPool -> %j", data);
       console.log("createUserPool -> id:", data.UserPool.Id);
       settings.set('userPoolId', data.UserPool.Id);
-      return resolve();
+      return resolve(data);
     });
   });
 }
@@ -105,7 +107,32 @@ function createUserPoolClient() {
       console.log("createUserPoolClient -> %j", data);
       console.log("createUserPoolClient -> id:", data.UserPoolClient.ClientId);
       settings.set('applicationId', data.UserPoolClient.ClientId);
-      return resolve();
+      return resolve(data);
+    });
+  });
+}
+
+function createIdentityPool() {
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#createIdentityPool-property
+    IdentityPoolName: config.POOL_NAME,
+    CognitoIdentityProviders: [{
+      ProviderName: 'cognito-idp.' + config.MY_REGION + '.amazonaws.com/' + settings.get('userPoolId'),
+      ClientId: settings.get('applicationId'),
+    }],
+    AllowUnauthenticatedIdentities: false, // for now
+    SupportedLoginProviders: { // eventually Facebook will go in here
+    }
+  };
+  return new Promise(function(resolve, reject) {
+    cognitoIdentity.createIdentityPool(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("createIdentityPool -> %j", data);
+      console.log("createIdentityPool -> id:", data.IdentityPoolId);
+      settings.set('identityPoolId', data.IdentityPoolId);
+      return resolve(data);
     });
   });
 }

@@ -20,3 +20,4 @@ exports.BUCKET_NAME = 's3-test.data.databatix.com';
 exports.TEST_FILE_NAME = 'test.txt';
 exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
+exports.POOL_NAME = 'CognitoAuthTestIdentityPool';
