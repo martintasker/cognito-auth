@@ -21,6 +21,7 @@ exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';
 exports.AUTH_ROLE_NAME = 'CognitoAuthTest-AuthRole';
+exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
 
 exports.phase = {
   pools: true,

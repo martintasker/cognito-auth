@@ -22,7 +22,10 @@ var amazonIAM = new AWS.IAM();
 
 Promise.resolve()
   .then(function() {
-    return deleteRole();
+    return deletePolicy(settings.get('bucketAuthPolicyArn'));
+  })
+  .then(function() {
+    return deleteRole(config.AUTH_ROLE_NAME);
   })
   .then(function() {
     return deleteIdentityPool(settings.get('identityPoolId'));
@@ -36,7 +39,7 @@ Promise.resolve()
   .then(deleteFiles)
   .then(deleteBucket)
   .catch(function(reason) {
-    console.log("problem: %j", reason);
+    console.log("problem: %j", typeof reason === 'object' ? reason.toString() : reason);
   });
 
 function deleteBucket() {
@@ -133,12 +136,12 @@ function deleteIdentityPool(identityPoolId) {
   });
 }
 
-function deleteRole() {
+function deleteRole(roleName) {
   if (!config.phase.roles) {
     return Promise.resolve();
   }
   var params = {
-    RoleName: config.AUTH_ROLE_NAME,
+    RoleName: roleName,
   };
   return new Promise(function(resolve, reject) {
     amazonIAM.deleteRole(params, function(err, data) {
@@ -146,6 +149,24 @@ function deleteRole() {
         return reject(err);
       }
       console.log("deleteRole -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function deletePolicy(policyArn) {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  var params = {
+    PolicyArn: policyArn,
+  };
+  return new Promise(function(resolve, reject) {
+    amazonIAM.deletePolicy(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("deletePolicy -> %j", data);
       return resolve(data);
     });
   });
