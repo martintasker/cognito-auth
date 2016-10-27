@@ -173,7 +173,7 @@ function createAuthRole() {
       },
       Condition: {
         StringEquals: {
-          "cognito-identity.amazonaws.com:aud": settings.identityPoolId,
+          "cognito-identity.amazonaws.com:aud": settings.get('identityPoolId'),
         },
         'ForAnyValue:StringLike': {
           "cognito-identity.amazonaws.com:amr": "authenticated"
@@ -193,8 +193,8 @@ function createAuthRole() {
         return reject(err);
       }
       // console.log("createRole -> %j", data);
-      console.log("createRole -> id:", data.Role.RoleId);
-      settings.set('authRoleId', data.Role.RoleId);
+      console.log("createRole -> arn:", data.Role.Arn);
+      settings.set('authRoleArn', data.Role.Arn);
       return resolve(data);
     });
   });
@@ -204,5 +204,20 @@ function attachAuthRole() {
   if (!config.phase.roles) {
     return Promise.resolve();
   }
-  return Promise.resolve();
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#setIdentityPoolRoles-property
+    IdentityPoolId: settings.get('identityPoolId'),
+    Roles: {
+      authenticated: settings.get('authRoleArn'),
+    }
+  };
+  return new Promise(function(resolve, reject) {
+    cognitoIdentity.setIdentityPoolRoles(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("setIdentityPoolRoles -> %j", data);
+      return resolve(data);
+    });
+  });
 }
