@@ -24,6 +24,8 @@ exports.AUTH_ROLE_NAME = 'CognitoAuthTest-AuthRole';
 exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
 
 exports.phase = {
+  buckets: true,
   pools: true,
-  roles: true
+  roles: false,
+  policies: false,
 };

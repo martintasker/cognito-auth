@@ -38,7 +38,7 @@ Promise.resolve()
   });
 
 function createBucket() {
-  if (!config.phase.pools) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   return new Promise(function(resolve, reject) {
@@ -53,7 +53,7 @@ function createBucket() {
 }
 
 function writeFile() {
-  if (!config.phase.pools) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   return new Promise(function(resolve, reject) {
@@ -80,7 +80,7 @@ function createUserPool() {
     AliasAttributes: ['email'], // sign in with email ID: this is what cognito-auth supports currently; 'phone_number' is also interesting
     AutoVerifiedAttributes: ['email'], // AWS recommends this setting, if the corresponding AliasAttribute is used
     LambdaConfig: {
-      // PreAuthentication: 'STRING_VALUE',
+      PreAuthentication: 'arn:aws:lambda:eu-west-1:564628766628:function:FBEmmAdminAuth',
     },
     MfaConfiguration: 'OFF', // this is all that cognito-auth will support, with minimum-lifecycle functionality
     Policies: {
@@ -226,7 +226,7 @@ function attachAuthRole() {
 }
 
 function createBucketPolicy() {
-  if (!config.phase.roles) {
+  if (!config.phase.policies) {
     return Promise.resolve();
   }
   var policy = {
@@ -264,7 +264,7 @@ function createBucketPolicy() {
 }
 
 function attachBucketPolicyToAuthRole() {
-  if (!config.phase.roles) {
+  if (!config.phase.policies) {
     return Promise.resolve();
   }
   return Promise.resolve();

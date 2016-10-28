@@ -43,7 +43,7 @@ Promise.resolve()
   });
 
 function deleteBucket() {
-  if (!config.phase.pools) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   return new Promise(function(resolve, reject) {
@@ -59,7 +59,7 @@ function deleteBucket() {
 }
 
 function deleteFiles() {
-  if (!config.phase.pools) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   return new Promise(function(resolve, reject) {
