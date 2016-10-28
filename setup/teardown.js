@@ -89,18 +89,59 @@ function deleteLambda(lambdaArn) {
   if (!config.phase.buckets) {
     return Promise.resolve();
   }
-  console.log("deleteLambda", lambdaArn);
-  return new Promise(function(resolve, reject) {
-    awsLambda.deleteFunction({
-      FunctionName: lambdaArn
-    }, function(err, data) {
-      if (err) {
-        return reject(err);
-      }
-      console.log("deleteLambda -> %j", data);
-      return resolve(data);
+
+  return Promise.resolve()
+    .then(deleteLambda)
+    .then(deleteLambdaSource);
+
+  function deleteLambdaSource() {
+    return new Promise(function(resolve, reject) {
+      var sp = subPaths(config.PRE_SIGNUP_LAMBDA_S3_KEY);
+      console.log("sp: %j", sp);
+      bucket.deleteObjects({
+        Delete: {
+          Objects: sp.map(function(subPath) {
+            return {
+              Key: subPath
+            };
+          }),
+          Quiet: false,
+        }
+      }, function(err, data) {
+        if (err) {
+          return reject(err);
+        }
+        console.log("deleteLambdaSource -> %j", data);
+        return resolve(data);
+      });
     });
-  });
+
+    function subPaths(path) {
+      var qualifiers = path.split('/');
+      if (qualifiers.length === 1) {
+        return [qualifiers[0]];
+      } else {
+        var prePaths = subPaths(qualifiers.slice(0, -1).join('/'));
+        prePaths.push(path);
+        return prePaths;
+      }
+    }
+  }
+
+  function deleteLambda() {
+    console.log("deleteLambda", lambdaArn);
+    return new Promise(function(resolve, reject) {
+      awsLambda.deleteFunction({
+        FunctionName: lambdaArn
+      }, function(err, data) {
+        if (err) {
+          return reject(err);
+        }
+        console.log("deleteLambda -> %j", data);
+        return resolve(data);
+      });
+    });
+  }
 }
 
 function deleteUserPool(userPoolId) {

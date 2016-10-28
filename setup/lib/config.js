@@ -17,12 +17,13 @@ function homeDirectory() {
 exports.REGION = getDefaultRegion();
 exports.BUCKET_NAME = 's3-test.data.databatix.com';
 exports.TEST_FILE_NAME = 'test.txt';
+exports.PRE_SIGNUP_LAMBDA_NAME = 'CognitoAuthPreSignup';
+exports.PRE_SIGNUP_LAMBDA_S3_KEY = 'exec/pre-signup.js';
 exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';
 exports.AUTH_ROLE_NAME = 'CognitoAuthTest-AuthRole';
 exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
-exports.PRE_SIGNUP_LAMBDA_NAME = 'CognitoAuthPreSignup';
 
 exports.phase = {
   buckets: true,

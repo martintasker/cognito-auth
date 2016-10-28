@@ -79,29 +79,51 @@ function createLambda() {
   if (!config.phase.buckets) {
     return Promise.resolve();
   }
-  var zippedCode = fs.readFileSync(path.join(__dirname, 'lambda/pre-signup.zip'));
-  var params = {
-    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
-    FunctionName: config.PRE_SIGNUP_LAMBDA_NAME,
-    Code: {
-      ZipFile: zippedCode,
-    },
-    Runtime: 'nodejs4.3',
-    Handler: 'preSignup', // the exported function from code
-    Role: 'arn:aws:iam::564628766628:role/lambda_s3_exec_role',
-    Description: 'Cognito pre-signup which confirms whitelisted emails and rejects all others',
-  };
-  return new Promise(function(resolve, reject) {
-    awsLambda.createFunction(params, function(err, data) {
-      if (err) {
-        return reject(err);
-      }
-      console.log("createFunction -> %j", data);
-      console.log("createFunction -> arn:", data.FunctionArn);
-      settings.set('preSignupLambdaArn', data.FunctionArn);
-      return resolve(data);
+
+  return Promise.resolve()
+    .then(uploadLambdaFile)
+    .then(registerLambda);
+
+  function uploadLambdaFile() {
+    return new Promise(function(resolve, reject) {
+      bucket.upload({
+        Key: config.PRE_SIGNUP_LAMBDA_S3_KEY,
+        Body: fs.readFileSync(path.join(__dirname, 'lambda/pre-signup.zip')),
+      }, function(err, data) {
+        if (err) {
+          return reject(err);
+        }
+        console.log("lambda upload -> %j", data);
+        return resolve(data);
+      });
     });
-  });
+  }
+
+  function registerLambda() {
+    var params = {
+      // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
+      FunctionName: config.PRE_SIGNUP_LAMBDA_NAME,
+      Code: {
+        S3Bucket: config.BUCKET_NAME,
+        S3Key: config.PRE_SIGNUP_LAMBDA_S3_KEY,
+      },
+      Runtime: 'nodejs4.3',
+      Handler: 'preSignup', // the exported function from code
+      Role: 'arn:aws:iam::564628766628:role/lambda_s3_exec_role', // todo: fix
+      Description: 'Cognito pre-signup which confirms whitelisted emails and rejects all others',
+    };
+    return new Promise(function(resolve, reject) {
+      awsLambda.createFunction(params, function(err, data) {
+        if (err) {
+          return reject(err);
+        }
+        console.log("createFunction -> %j", data);
+        console.log("createFunction -> arn:", data.FunctionArn);
+        settings.set('preSignupLambdaArn', data.FunctionArn);
+        return resolve(data);
+      });
+    });
+  }
 }
 
 function createUserPool() {
