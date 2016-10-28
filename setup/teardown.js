@@ -19,6 +19,7 @@ var bucket = new AWS.S3({
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
+var awsLambda = new AWS.Lambda();
 
 Promise.resolve()
   .then(function() {
@@ -35,6 +36,9 @@ Promise.resolve()
   })
   .then(function() {
     return deleteUserPool(settings.get('userPoolId'));
+  })
+  .then(function() {
+    return deleteLambda(settings.get('preSignupLambdaArn'));
   })
   .then(deleteFiles)
   .then(deleteBucket)
@@ -76,6 +80,24 @@ function deleteFiles() {
         return reject(err);
       }
       console.log("deleteObjects -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function deleteLambda(lambdaArn) {
+  if (!config.phase.buckets) {
+    return Promise.resolve();
+  }
+  console.log("deleteLambda", lambdaArn);
+  return new Promise(function(resolve, reject) {
+    awsLambda.deleteFunction({
+      FunctionName: lambdaArn
+    }, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("deleteLambda -> %j", data);
       return resolve(data);
     });
   });

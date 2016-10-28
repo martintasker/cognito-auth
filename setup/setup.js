@@ -1,5 +1,8 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
+
 var AWS = require('aws-sdk');
 
 var config = require('./lib/config');
@@ -17,11 +20,13 @@ var bucket = new AWS.S3({
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
+var awsLambda = new AWS.Lambda();
 
 Promise.resolve()
   // create a bucket, and send a test file to the bucket
   .then(createBucket)
   .then(writeFile)
+  .then(createLambda)
   // create a user pool, a client app for it, and an identity pool for both of them
   .then(createUserPool)
   .then(createUserPoolClient)
@@ -70,6 +75,35 @@ function writeFile() {
   });
 }
 
+function createLambda() {
+  if (!config.phase.buckets) {
+    return Promise.resolve();
+  }
+  var zippedCode = fs.readFileSync(path.join(__dirname, 'lambda/pre-signup.zip'));
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
+    FunctionName: config.PRE_SIGNUP_LAMBDA_NAME,
+    Code: {
+      ZipFile: zippedCode,
+    },
+    Runtime: 'nodejs4.3',
+    Handler: 'preSignup', // the exported function from code
+    Role: 'arn:aws:iam::564628766628:role/lambda_s3_exec_role',
+    Description: 'Cognito pre-signup which confirms whitelisted emails and rejects all others',
+  };
+  return new Promise(function(resolve, reject) {
+    awsLambda.createFunction(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("createFunction -> %j", data);
+      console.log("createFunction -> arn:", data.FunctionArn);
+      settings.set('preSignupLambdaArn', data.FunctionArn);
+      return resolve(data);
+    });
+  });
+}
+
 function createUserPool() {
   if (!config.phase.pools) {
     return Promise.resolve();
@@ -80,7 +114,7 @@ function createUserPool() {
     AliasAttributes: ['email'], // sign in with email ID: this is what cognito-auth supports currently; 'phone_number' is also interesting
     AutoVerifiedAttributes: ['email'], // AWS recommends this setting, if the corresponding AliasAttribute is used
     LambdaConfig: {
-      PreAuthentication: 'arn:aws:lambda:eu-west-1:564628766628:function:FBEmmAdminAuth',
+      PreSignUp: settings.get('preSignupLambdaArn'),
     },
     MfaConfiguration: 'OFF', // this is all that cognito-auth will support, with minimum-lifecycle functionality
     Policies: {

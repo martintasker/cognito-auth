@@ -22,10 +22,11 @@ exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';
 exports.AUTH_ROLE_NAME = 'CognitoAuthTest-AuthRole';
 exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
+exports.PRE_SIGNUP_LAMBDA_NAME = 'CognitoAuthPreSignup';
 
 exports.phase = {
   buckets: true,
   pools: true,
-  roles: false,
-  policies: false,
+  roles: true,
+  policies: true,
 };

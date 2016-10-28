@@ -27,6 +27,11 @@ Initial minimal functionality:
 * implement minimal FB user lifecycle
 * have setup script support the above
 
+Loose ends:
+
+* appropriate role for executing lambda
+* better way to zip the lambda
+
 Later: implement post-minimal functionality.
 
 ## Levels of functionality
