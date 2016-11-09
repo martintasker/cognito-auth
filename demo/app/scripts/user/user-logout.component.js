@@ -8,17 +8,7 @@ angular.module('demoApp')
   var self = this;
   self.logout = logout;
   self.deregister = deregister;
-  self.interactionDisabled = false;
-  // message: User.enableInteraction
-  // message: User.disableInteraction
-
-  $scope.$on('User.disableInteraction', function() {
-    self.interactionDisabled = true;
-  });
-
-  $scope.$on('User.enableInteraction', function() {
-    self.interactionDisabled = false;
-  });
+  self.isLoggedIn = CognitoUser.isLoggedIn;
 
   function logout() {
     $scope.$emit('User.disableInteraction');

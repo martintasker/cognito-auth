@@ -25,9 +25,6 @@ angular.module('demoApp')
   function register() {
     $scope.$emit('User.disableInteraction');
     CognitoUser.register(self.username, self.password, self.email, '')
-      .then(function() {
-        return CognitoUser.login(self.username, self.password);
-      })
       .then(function(cognitoUser) {
         $scope.$emit('User.enableInteraction');
         return cognitoUser;

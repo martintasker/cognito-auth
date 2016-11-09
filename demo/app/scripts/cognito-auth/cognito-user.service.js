@@ -168,8 +168,9 @@ angular.module('mpt.cognito-auth')
         result.reject(err);
         return;
       }
-      result.resolve();
       currentUser = null;
+      setDefaultCredentials();
+      result.resolve();
     });
     return result.promise;
   }
