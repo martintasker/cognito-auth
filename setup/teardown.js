@@ -93,6 +93,10 @@ function deleteLambda(lambdaArn) {
     return Promise.resolve();
   }
 
+  if (!config.GATE_PRE_SIGNUP) {
+    return Promise.resolve();
+  }
+
   return Promise.resolve()
     .then(deleteLambda)
     .then(deleteLambdaSource);

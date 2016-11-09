@@ -34,6 +34,15 @@ Loose ends:
 
 Later: implement post-minimal functionality.
 
+### Status
+
+Working on minimal functionality:
+
+* `setup` and `teardown` scripts create user pools, identity pools
+* demo app handles registration _but_
+  * when setup is not gated on confirmation lambda, then ID is unconfirmed and so cannot automatically log in
+  * when setup is gated on lambda which would confirm, then privs to execute lambda are all wrong
+
 ## Levels of functionality
 
 ### Minimal Cognito user lifecycle

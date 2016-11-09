@@ -81,6 +81,10 @@ function createLambda() {
     return Promise.resolve();
   }
 
+  if (!config.GATE_PRE_SIGNUP) {
+    return Promise.resolve();
+  }
+
   return Promise.resolve()
     .then(uploadLambdaFile)
     .then(registerLambda);
@@ -136,9 +140,7 @@ function createUserPool() {
     PoolName: config.USER_POOL_NAME,
     AliasAttributes: ['email'], // sign in with email ID: this is what cognito-auth supports currently; 'phone_number' is also interesting
     AutoVerifiedAttributes: ['email'], // AWS recommends this setting, if the corresponding AliasAttribute is used
-    LambdaConfig: {
-      PreSignUp: settings.get('preSignupLambdaArn'),
-    },
+    LambdaConfig: {},
     MfaConfiguration: 'OFF', // this is all that cognito-auth will support, with minimum-lifecycle functionality
     Policies: {
       PasswordPolicy: { // feel free to configure
@@ -150,6 +152,9 @@ function createUserPool() {
       }
     },
   };
+  if (config.GATE_PRE_SIGNUP) {
+    params.LambdaConfig.PreSignUp = settings.get('preSignupLambdaArn');
+  }
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.createUserPool(params, function(err, data) {
       if (err) {
