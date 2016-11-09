@@ -33,7 +33,8 @@ Promise.resolve()
   .then(createIdentityPool)
   // create auth role, then attach it to the identity pool
   .then(createAuthRole)
-  .then(attachAuthRole)
+  .then(createUnauthRole)
+  .then(attachRoles)
   // create the bucket policy, and attach it to the auth role
   .then(createBucketPolicy)
   .then(attachBucketPolicyToAuthRole)
@@ -201,7 +202,7 @@ function createIdentityPool() {
       ProviderName: 'cognito-idp.' + config.REGION + '.amazonaws.com/' + settings.get('userPoolId'),
       ClientId: settings.get('applicationId'),
     }],
-    AllowUnauthenticatedIdentities: false, // for now
+    AllowUnauthenticatedIdentities: true, // required (probably!)
     SupportedLoginProviders: { // eventually Facebook will go in here
     }
   };
@@ -259,7 +260,48 @@ function createAuthRole() {
   });
 }
 
-function attachAuthRole() {
+function createUnauthRole() {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  var policy = {
+    Version: '2012-10-17',
+    Statement: [{
+      Effect: "Allow",
+      Action: "sts:AssumeRoleWithWebIdentity",
+      Principal: {
+        Federated: "cognito-identity.amazonaws.com"
+      },
+      Condition: {
+        StringEquals: {
+          "cognito-identity.amazonaws.com:aud": settings.get('identityPoolId'),
+        },
+        'ForAnyValue:StringLike': {
+          "cognito-identity.amazonaws.com:amr": "unauthenticated"
+        }
+      }
+    }]
+  };
+  var policyJson = JSON.stringify(policy, null, 2);
+  var params = {
+    // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
+    RoleName: config.UNAUTH_ROLE_NAME,
+    AssumeRolePolicyDocument: policyJson,
+  };
+  return new Promise(function(resolve, reject) {
+    amazonIAM.createRole(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      // console.log("createRole -> %j", data);
+      console.log("createRole -> arn:", data.Role.Arn);
+      settings.set('unAuthRoleArn', data.Role.Arn);
+      return resolve(data);
+    });
+  });
+}
+
+function attachRoles() {
   if (!config.phase.roles) {
     return Promise.resolve();
   }
@@ -268,6 +310,7 @@ function attachAuthRole() {
     IdentityPoolId: settings.get('identityPoolId'),
     Roles: {
       authenticated: settings.get('authRoleArn'),
+      unauthenticated: settings.get('unauthRoleArn'),
     }
   };
   return new Promise(function(resolve, reject) {

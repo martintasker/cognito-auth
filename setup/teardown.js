@@ -26,6 +26,9 @@ Promise.resolve()
     return deletePolicy(settings.get('bucketAuthPolicyArn'));
   })
   .then(function() {
+    return deleteRole(config.UNAUTH_ROLE_NAME);
+  })
+  .then(function() {
     return deleteRole(config.AUTH_ROLE_NAME);
   })
   .then(function() {
