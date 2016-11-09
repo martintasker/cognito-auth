@@ -1,0 +1,9 @@
+<form novalidate ng-submit="vm.confirm()" name="confirmForm">
+  <fieldset ng-disabled="vm.interactionDisabled">
+    <div class="form-group">
+      <input type="text" name="username" ng-model="vm.username" placeholder="User name" required />
+      <input type="text" name="code" ng-model="vm.code" placeholder="Code" required />
+      <button class="btn btn-primary" ng-disabled="vm.interactionDisabled || confirmForm.$invalid" type="submit">Confirm</button>
+    </div>
+  </fieldset>
+</form>

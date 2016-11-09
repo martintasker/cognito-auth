@@ -89,6 +89,23 @@ angular.module('mpt.cognito-auth')
     return result.promise;
   }
 
+  function confirmRegistration(username, code) {
+    var result = $q.defer();
+    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+      Username: username,
+      Pool: userPool
+    });
+    cognitoUser.confirmRegistration(code, true, function(err, res) {
+      if (err) {
+        console.log("cognitoUser.confirmRegistration() error:", err);
+        result.reject(err);
+        return;
+      }
+      result.resolve();
+    });
+    return result.promise;
+  }
+
   function login(username, password) {
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
@@ -168,6 +185,7 @@ angular.module('mpt.cognito-auth')
   // public interface
   return {
     register: register, // username, password, emailAddress, phoneNumber -> promise of cognitoUser
+    confirmRegistration: confirmRegistration, // username, code -> promise
     login: login, // username, password -> promise of cognitoUser
     logout: logout, // -> promise
     deregister: deregister, // -> promise
