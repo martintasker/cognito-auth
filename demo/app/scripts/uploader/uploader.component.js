@@ -8,10 +8,13 @@ angular.module('demoApp')
   var self = this;
   self.errorMessage = "";
   self.successMessage = "";
+  self.progressMessage = '';
   self.uploaded = false;
   self.upload = upload;
   self.target = UploadService.ROOT_PATH + '/' + self.path;
-  self.isLoggedIn = isLoggedIn;
+  self.isLoggedIn = CognitoUser.isLoggedIn;
+
+  // implementation
 
   function upload(file) {
     self.errorMessage = "";
@@ -25,7 +28,7 @@ angular.module('demoApp')
     }
 
     self.successMessage = "sending " + file.name + " ...";
-    UploadService.upload(file, self.path, self.contentType)
+    UploadService.upload(file, self.path, self.contentType, progressCb)
       .then(function() {
         self.successMessage = "sent " + file.name;
         self.uploaded = true;
@@ -35,8 +38,12 @@ angular.module('demoApp')
       });
   }
 
-  function isLoggedIn() {
-    return CognitoUser.isLoggedIn();
+  function progressCb(info) {
+    console.log("progressCb:", info);
+    var kbLoaded = Math.floor(info.loaded / 1024);
+    var kbTotal = Math.floor(info.total / 1024);
+    self.progressMessage = "Uploaded " + kbLoaded + "kB of " + kbTotal + "kB";
+    $scope.$digest();
   }
 })
 
