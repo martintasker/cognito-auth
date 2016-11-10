@@ -4,13 +4,15 @@
 
 angular.module('demoApp')
 
-.factory('UploadService', function($q) {
+.factory('UploadService', function($q, CognitoAuthConfig) {
 
-  var BUCKET_NAME = '736aab4.data.databatix.com';
-  var ROOT_PATH = "https://s3-eu-west-1.amazonaws.com/" + BUCKET_NAME;
+  var BUCKET_NAME = 's3-test.data.databatix.com';
+  var ROOT_PATH = "https://s3-" + CognitoAuthConfig.AWS_REGION + ".amazonaws.com/" + BUCKET_NAME;
 
   function upload(file, target, contentType, progressCb) {
-    console.log("UploadService.upload()", typeof file === 'string' ? 'String(' + file.length + ' bytes)' : file, "to", target);
+    if (CognitoAuthConfig.TRACE) {
+      console.log("UploadService.upload()", typeof file === 'string' ? 'String(' + file.length + ' bytes)' : file, "to", target, 'type', contentType);
+    }
 
     var bucket = new AWS.S3({
       params: {

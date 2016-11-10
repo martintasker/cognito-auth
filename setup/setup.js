@@ -25,6 +25,7 @@ var awsLambda = new AWS.Lambda();
 Promise.resolve()
   // create a bucket, and send a test file to the bucket
   .then(createBucket)
+  .then(attachCORSToBucket)
   .then(writeFile)
   .then(createLambda)
   // create a user pool, a client app for it, and an identity pool for both of them
@@ -53,6 +54,34 @@ function createBucket() {
         return reject(err);
       }
       console.log("createBucket -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function attachCORSToBucket() {
+  if (!config.phase.buckets) {
+    return Promise.resolve();
+  }
+  // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
+  var params = {
+    // Bucket: (required value, given to S3 constructor)
+    CORSConfiguration: {
+      CORSRules: [{
+        AllowedMethods: ['GET', 'PUT', 'POST'],
+        AllowedOrigins: ['*'],
+        AllowedHeaders: ['*'],
+        ExposeHeaders: ['ETag', 'x-amz-meta-custom-header'],
+        MaxAgeSeconds: 3000
+      }]
+    }
+  };
+  return new Promise(function(resolve, reject) {
+    bucket.putBucketCors(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("putBucketCors -> %j", data);
       return resolve(data);
     });
   });
@@ -300,7 +329,7 @@ function createUnauthRole() {
       }
       // console.log("createRole -> %j", data);
       console.log("createRole -> arn:", data.Role.Arn);
-      settings.set('unAuthRoleArn', data.Role.Arn);
+      settings.set('unauthRoleArn', data.Role.Arn);
       return resolve(data);
     });
   });
@@ -371,7 +400,6 @@ function attachBucketPolicyToAuthRole() {
   if (!config.phase.policies) {
     return Promise.resolve();
   }
-  return Promise.resolve();
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#attachRolePolicy-property
     RoleName: config.AUTH_ROLE_NAME,
