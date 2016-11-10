@@ -25,11 +25,19 @@ angular.module('demoApp')
     $scope.$emit('User.disableInteraction');
     CognitoUser.confirmRegistration(self.username, self.code)
       .then(function() {
+        self.username = '';
+        self.code = '';
+        $scope.form.$setPristine();
+        $scope.form.$setUntouched();
         $scope.$emit('User.enableInteraction');
         return;
       })
       .catch(function(err) {
         $scope.$emit('User.error', err);
+        self.username = '';
+        self.code = '';
+        $scope.form.$setPristine();
+        $scope.form.$setUntouched();
         $scope.$emit('User.enableInteraction');
       });
   }

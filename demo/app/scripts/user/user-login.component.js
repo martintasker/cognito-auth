@@ -26,18 +26,18 @@ angular.module('demoApp')
     $scope.$emit('User.disableInteraction');
     CognitoUser.login(self.username, self.password)
       .then(function(cognitoUser) {
-        $scope.loginForm.$setPristine();
-        $scope.loginForm.$setUntouched();
         self.username = '';
         self.password = '';
+        $scope.form.$setPristine();
+        $scope.form.$setUntouched();
         $scope.$emit('User.enableInteraction');
         return cognitoUser;
       })
       .catch(function(err) {
-        $scope.loginForm.$setPristine();
-        $scope.loginForm.$setUntouched();
         self.username = '';
         self.password = '';
+        $scope.form.$setPristine();
+        $scope.form.$setUntouched();
         $scope.$emit('User.error', err);
         $scope.$emit('User.enableInteraction');
       });

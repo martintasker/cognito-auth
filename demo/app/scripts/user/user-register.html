@@ -1,10 +1,10 @@
-<form novalidate ng-submit="vm.register()" name="registerForm">
+<form novalidate ng-submit="vm.register()" name="form">
   <fieldset ng-disabled="vm.interactionDisabled">
     <div class="form-group">
       <input type="text" name="username" ng-model="vm.username" placeholder="User name" required />
       <input type="text" name="email" ng-model="vm.email" placeholder="Email Address" required />
       <input type="password" name="password" ng-model="vm.password" placeholder="Password" required />
-      <button class="btn btn-primary" ng-disabled="vm.interactionDisabled || registerForm.$invalid" type="submit">Register</button>
+      <button class="btn btn-primary" ng-disabled="vm.interactionDisabled || form.$invalid" type="submit">Register</button>
     </div>
   </fieldset>
 </form>
