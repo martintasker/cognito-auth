@@ -27,22 +27,31 @@ angular.module('mpt.cognito-auth')
   setInitialCredentials();
 
   function setInitialCredentials() {
-    var trace = true;
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
     });
     var cognitoUser = userPool.getCurrentUser();
     if (!cognitoUser) {
-      trace && console.log("retrieveUser: no user from previous session");
+      if (CognitoAuthConfig.TRACE) {
+        console.log("retrieveUser: no user from previous session");
+      }
       $rootScope.$broadcast('CognitoUser.loggedOut');
       return;
     }
     cognitoUser.getSession(function(err, session) {
       if (err || !session.isValid()) {
-        trace && err && console.log("retrieveUser: getSession error", err);
-        trace && !err && console.log("retrieveUser: previous session is not valid");
+        if (CognitoAuthConfig.TRACE) {
+          if (err) {
+            console.log("retrieveUser: getSession error", err);
+          } else {
+            console.log("retrieveUser: previous session is not valid");
+          }
+        }
         $rootScope.$broadcast('CognitoUser.loggedOut');
         return;
+      }
+      if (CognitoAuthConfig.TRACE) {
+        console.log("getSession: session", session);
       }
       var logins = {};
       logins[cognitoIDP] = session.getIdToken().getJwtToken();
@@ -168,6 +177,7 @@ angular.module('mpt.cognito-auth')
         result.reject(err);
         return;
       }
+      currentUser.clearCachedTokens(); // really AWS should handle this in the SDK
       currentUser = null;
       setDefaultCredentials();
       result.resolve();

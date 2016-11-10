@@ -16,6 +16,7 @@ angular.module('demoApp', [
   AWS_USER_POOL_ID: settings.userPoolId,
   AWS_APP_ID: settings.applicationId,
   AWS_ID_POOL_ID: settings.identityPoolId,
+  TRACE: true,
 })
 
 ;
