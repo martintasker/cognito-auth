@@ -30,6 +30,7 @@ angular.module('demoApp')
         $scope.form.$setPristine();
         $scope.form.$setUntouched();
         $scope.$emit('User.enableInteraction');
+        $scope.$emit('User.success', 'Confirmation successful');
         return;
       })
       .catch(function(err) {

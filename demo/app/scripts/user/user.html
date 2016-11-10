@@ -1,14 +1,47 @@
-<div>
-  <div>
+<div class="row" ng-show="!!vm.errorMessage || !!vm.successMessage">
+  <div class="col-xs-12">
+    <div ng-show="vm.errorMessage" style="color:red">{{vm.errorMessage}}</div>
+    <div ng-show="vm.successMessage" style="color:green">{{vm.successMessage}}</div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <h2>Registration lifecycle</h2>
+  </div>
+  <div class="col-xs-2">
+    Register
+  </div>
+  <div class="col-xs-10">
     <user-register>
     </user-register>
+  </div>
+  <div class="col-xs-2">
+    Confirm
+  </div>
+  <div class="col-xs-10">
     <user-confirm>
     </user-confirm>
-    <p>{{vm.isLoggedIn ? 'Logged In' : 'Not logged in'}}</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <h2>Login lifecycle</h2>
+  </div>
+  <div class="col-xs-2">
+    Login
+  </div>
+  <div class="col-xs-10">
     <user-login>
     </user-login>
+    <p>{{vm.isLoggedIn ? 'Logged In' : 'Not logged in'}}</p>
+  </div>
+  <div class="col-xs-2">
+    Logout
+  </div>
+  <div class="col-xs-10">
     <user-logout>
     </user-logout>
   </div>
-  <div ng-show="vm.errorMessage" style="color:red">{{vm.errorMessage}}</div>
 </div>

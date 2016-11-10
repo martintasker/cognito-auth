@@ -32,6 +32,7 @@ angular.module('demoApp')
         $scope.form.$setPristine();
         $scope.form.$setUntouched();
         $scope.$emit('User.enableInteraction');
+        $scope.$emit('User.success', 'Registration successful');
         return cognitoUser;
       })
       .catch(function(err) {

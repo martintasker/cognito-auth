@@ -8,6 +8,7 @@ angular.module('demoApp')
   var self = this;
   self.isLoggedIn = false;
   self.errorMessage = '';
+  self.successMessage = '';
   // message: CognitoUser.loggedIn
   // message: CognitoUser.loggedOut
   // message: User.enableInteraction
@@ -15,11 +16,16 @@ angular.module('demoApp')
   // message: User.error
 
   $scope.$on('User.disableInteraction', function() {
-    $scope.$emit('User.error');
+    self.errorMessage = '';
+    self.successMessage = '';
   });
 
   $scope.$on('User.error', function(event, error) {
     self.errorMessage = (error && error.toString()) || '';
+  });
+
+  $scope.$on('User.success', function(event, message) {
+    self.successMessage = message;
   });
 
   $scope.$on('CognitoUser.loggedIn', function() {
