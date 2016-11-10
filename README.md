@@ -6,8 +6,9 @@ Aims:
   based on Angularization of recipes given in the
   [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README
 * deliver `CognitoAuth` as a ready-to-use library which can be installed in client projects using bower
-* implement a demo app using Angular, Boostrap and ui-bootstrap, which gives 100% coverage of `CognitoAuth`,
-  whose code is available for copying and tweaking (but is not necessarily conveniently packaged)
+* implement a demo app using Angular and Boostrap, which gives 100% coverage of `CognitoAuth`,
+  whose code is available for copying and tweaking -- but which is not necessarily conveniently
+  packaged, and is not necessarily a sane user experience
 * implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
   with code also available for copying and tweaking
 
@@ -22,15 +23,8 @@ Aims:
 
 Initial minimal functionality:
 
-* bring in ui-bootstrap and bring up app to required functionality
 * implement minimal AWS user lifecycle
-* implement minimal FB user lifecycle
 * have setup script support the above
-
-Loose ends:
-
-* appropriate role for executing lambda
-* better way to zip the lambda
 
 Later: implement post-minimal functionality.
 
@@ -49,34 +43,38 @@ Working on minimal functionality:
 
 Implement user registration and de-registration, login, logout, and recovery of previous session.
 
-To keep it minimal,
+To keep it minimal, do not include password lifecycle management or user profile data management: this does place
+severe constraints in usefulness.
 
-* do not include password lifecycle management or user profile data management
-* therefore, restrict registration only to pre-permitted account name(s)
+From the Cognito SDK page, this uses use cases
 
-This is useful in very tightly-controlled sites with a couple of users known personally to the developer.
+* 1, register
+* 2, apply confirmation code
+* 13, delete
+* 4, login
+* 14, logout
+* 16, retrieve previous session
 
-This uses use cases 1 (register), 13 (delete), 4 (login), 14 (logout), 15 (global logout), 16 (retrieve previous session),
-from the Cognito SDK page.
+### Enable broad Cognito-based user community
+
+The numbers below refer to use cases with the Cognito Identity SDK readme:
+
+* password management: change 11, manage forgotten 12: the absolute minimum necessary to broaden user base
+* minimal MFA additionals: confirm code 2, re-send code 3: minimum necessary to sanely broaden user base
+* SMS-based login instead of email
+* customized welcome messages
+* admin-initiated registration 23: this is a simple add to minimal Cognito user lifecycle, enabling the site
+  developer/admin to invite users personally, but not scaling beyond a tight user community
+* profile management: view 5, verify 6, delete 7, update 8: change email address etc: with this, you have reasonable
+  support for a broad Cognito-managed user base
+* MFA management: enable 9, disable 10: allows users to change their MFA options.  It's perfectly fine not to permit
+  this--just have a site-wide policy that MFA is either required, or not required.
 
 ### Minimal Facebook user lifecycle
 
 Implement federated login using Facebook.
 
 This permits scaling up of access without going through the complexities of proper ID lifecycle management.
-
-### Enable broad Cognito-based user community
-
-The numbers below refer to use cases with the Cognito Identity SDK readme:
-
-* admin-initiated registration 23: this is a simple add to minimal Cognito user lifecycle, enabling the site
-  developer/admin to invite users personally, but not scaling beyond a tight user community
-* password management: change 11, manage forgotten 12: the absolute minimum necessary to broaden user base
-* minimal MFA additionals: confirm code 2, re-send code 3: minimum necessary to sanely broaden user base
-* profile management: view 5, verify 6, delete 7, update 8: change email address etc: with this, you have reasonable
-  support for a broad Cognito-managed user base
-* MFA management: enable 9, disable 10: allows users to change their MFA options.  It's perfectly fine not to permit
-  this--just have a site-wide policy that MFA is either required, or not required.
 
 ## Demo app
 
