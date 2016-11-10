@@ -139,8 +139,16 @@ angular.module('mpt.cognito-auth')
     var result = $q.defer();
     result.resolve();
     result.promise
-      .then(function() { return doLogin(); })
-      .then(function() { return getCredentials(); });
+      .then(function() {
+        return doLogin();
+      })
+      .then(function() {
+        return getCredentials();
+      })
+      .then(function() {
+        currentUser = cognitoUser;
+        $rootScope.$broadcast('CognitoUser.loggedIn');
+      });
     return result.promise;
 
     function doLogin() {
@@ -166,8 +174,6 @@ angular.module('mpt.cognito-auth')
             IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
             Logins: logins
           });
-          currentUser = cognitoUser;
-          $rootScope.$broadcast('CognitoUser.loggedIn');
           result.resolve(cognitoUser);
         },
       });
@@ -186,8 +192,6 @@ angular.module('mpt.cognito-auth')
           setDefaultCredentials();
           return;
         }
-        currentUser = cognitoUser;
-        $rootScope.$broadcast('CognitoUser.loggedIn');
         result.resolve(cognitoUser);
       });
       return result.promise;
