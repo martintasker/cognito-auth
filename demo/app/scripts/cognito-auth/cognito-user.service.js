@@ -27,6 +27,9 @@ angular.module('mpt.cognito-auth')
   setInitialCredentials();
 
   function setInitialCredentials() {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.setInitialCredentials()");
+    }
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
     });
@@ -65,6 +68,9 @@ angular.module('mpt.cognito-auth')
   }
 
   function setDefaultCredentials() {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.setDefaultCredentials()");
+    }
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
     });
@@ -72,6 +78,9 @@ angular.module('mpt.cognito-auth')
   }
 
   function register(username, password, emailAddress, phoneNumber) {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.register() --", username, '(password)', emailAddress, phoneNumber);
+    }
     var result = $q.defer();
     var attributeList = [];
     if (emailAddress) {
@@ -99,6 +108,9 @@ angular.module('mpt.cognito-auth')
   }
 
   function confirmRegistration(username, code) {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.confirmRegistration() --", username, code);
+    }
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -116,6 +128,9 @@ angular.module('mpt.cognito-auth')
   }
 
   function login(username, password) {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.login() --", username, '(password)');
+    }
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -130,29 +145,27 @@ angular.module('mpt.cognito-auth')
         result.reject(err);
       },
       onSuccess: function(res) {
+        if (CognitoAuthConfig.TRACE) {
+          console.log("cognitoUser.authenticateUser() result:", res);
+        }
         var logins = {};
         logins[cognitoIDP] = res.getIdToken().getJwtToken();
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
           IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
           Logins: logins
         });
-        AWS.config.credentials.get(function(err) {
-          if (err) {
-            console.log("error:", err);
-            result.reject(err);
-            setDefaultCredentials();
-            return;
-          }
-          currentUser = cognitoUser;
-          $rootScope.$broadcast('CognitoUser.loggedIn');
-          result.resolve(cognitoUser);
-        });
+        currentUser = cognitoUser;
+        $rootScope.$broadcast('CognitoUser.loggedIn');
+        result.resolve(cognitoUser);
       },
     });
     return result.promise;
   }
 
   function logout() {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.logout()");
+    }
     var result = $q.defer();
     if (!currentUser) {
       result.reject("no current user: cannot logout");
@@ -166,6 +179,9 @@ angular.module('mpt.cognito-auth')
   }
 
   function deregister() {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.deregister()");
+    }
     var result = $q.defer();
     if (!currentUser) {
       result.reject("no current user: cannot deregister");
