@@ -11,7 +11,6 @@ angular.module('demoApp')
   self.successMessage = '';
   // message: CognitoUser.loggedIn
   // message: CognitoUser.loggedOut
-  // message: User.enableInteraction
   // message: User.disableInteraction
   // message: User.error
 

@@ -2,17 +2,18 @@
 
 angular.module('demoApp')
 
-.controller('UserLogoutController', function($scope, CognitoUser) {
+.controller('UserDeregisterController', function($scope, CognitoUser) {
 
   // public interface
   var self = this;
-  self.logout = logout;
+  self.deregister = deregister;
   self.isLoggedIn = CognitoUser.isLoggedIn;
 
-  function logout() {
+  function deregister() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.logout()
+    CognitoUser.deregister()
       .then(function() {
+        $scope.$emit('User.success', 'Deregistration successful');
         $scope.$emit('User.enableInteraction');
       })
       .catch(function(err) {
@@ -22,13 +23,10 @@ angular.module('demoApp')
   }
 })
 
-.component('userLogout', {
-  templateUrl: 'scripts/user/user-logout.html',
-  controller: 'UserLogoutController',
+.component('userDeregister', {
+  templateUrl: 'scripts/user/user-deregister.html',
+  controller: 'UserDeregisterController',
   controllerAs: 'vm',
-  bindings: {
-    enableDeregistration: '<',
-  }
 })
 
 ;
