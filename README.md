@@ -41,26 +41,26 @@ cognito-auth requires AWS setup in the back end.  Many tutorials/guides give ste
 about setting that up via the AWS console.  cognito-auth provides a setup script to do everything for
 you.  In principle, what you do is:
 
-* edit `setup/lib/config.js` to specify the bucket name, pool names, app name, role names etc that you want:
-  you **must** at least change the bucket name
+* edit `setup/lib/config.js` to specify the pool names, app name, role names etc that you want
+* also edit the bucket name: you **must** change it (or not set up buckets at all)
 * `cd setup`, then `node setup`
-* open `setup/settings.json` in an editor, where you'll see the settings which need to be copied for your app's use
 
 The `node setup` script assumes your admin/developer AWS credentials are available, eg from a previous `aws config` command
 on the CLI.
 
 The whole point of Cognito is that no developer credentials need to leak to the public.  Your users only see the pool IDs
-etc allocated during setup -- which are now in `setup/settings.json`.  Paste that information into the following snippet in your app:
+etc allocated during setup -- which are now in `setup/settings.json`.  Open that file in an editor, and paste the settings
+object (or at least the properties which you need) into the following snippet in your app:
 
 ```js
 'use strict';
 
 // paste into the below from setup/settings.json
-// (the specific values below won't work: they'll be history by the time you read this)
 var settings = {
-  "userPoolId": "eu-west-1_X4PEVjSAX",
-  "applicationId": "218jeqiophtiq4p2f845u1t824",
-  "identityPoolId": "eu-west-1:5d044106-bf5e-4528-9f88-e95a185e9667",
+  "userPoolId": "eu-west-1_XXXXXXXXX",
+  "applicationId": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+  "identityPoolId": "eu-west-1:00000000-0000-0000-0000-000000000000",
+  "bucketName": "xxx.xxx.xxx.com",
 };
 
 angular.module('yourApp')
@@ -73,16 +73,22 @@ angular.module('yourApp')
   TRACE: false,
 })
 
+.constant('CognitoAuthS3Config', {
+  BUCKET_REGION: 'eu-west-1',
+  BUCKET_NAME: settings.bucketName,
+  TRACE: true,
+})
+
 ;
 ```
 
-If you like, you can paste the values directly into the `.constant`.  But, probably, you'll find yourself
-repeatedly setting up and tearing down during development.  If so, you'll find it easier to use the structure
-suggested above: you can just paste directly into the `settings` object without any fiddly editing.
+If you like, you can paste the values directly into the relevant `.constant`.  But, probably, you'll find yourself
+repeatedly setting up and tearing down during development.  If so, you'll probably find it easier to use the structure
+suggested above: you can just paste directly into the `settings` object without any fiddly field-by-field editing.
 
 ### Testing the back-end setup
 
-The demo app allows you to test the setup:
+The demo app allows you to test the setup created by `node setup`:
 
 * edit `demo/app/scripts/app.js` and paste the settings from `setup/settings.js` into it, as shown above
 * run the app: `cd demo`, then `grunt serve`
@@ -109,12 +115,11 @@ Use the demo app as a starting-point, but **do not** just copy and tweak it whol
 * use the `CognitoUser.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
   call the APIs
 * **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
-  application: instead, use the built library from bower
+  application: instead, use the built `cognito-auth` library from bower
+* **do not** think of the S3-based configuration (in `node setup`) or file upload (in the UI and app)
+  as anything other than toys.  Real S3-based use needs a better UI, and more careful bucket policies.
 * **do not** inflict on your users, the test-style UI of the demo app!  Integrate things properly
   into a nice UI design, maybe using `ui-bootstrap` for dialogs or such.
-
-The demo app also contains some file uploading code which is perhaps a useful starting-point for your
-own S3-based applications of Cognito, but needs a lot of love to make it production-grade.
 
 ### Fiddling with back-end setup
 
@@ -133,12 +138,12 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 
 * registration using name and email address, confirmation with code, login, logout, de-registration, session pick-up from local storage
 * setup script and demo app needed for the above
-* bucket setup and file upload demo/validation
 * bower-installable `CognitoAuth` service
+* bucket setup and file upload, to demonstrate/validate that the access controls work
 
 ### Issues
 
-* S3 application is not sufficiently separated from Cognito auth basics
+* S3 application should be more cleanly separated from Cognito auth basics
 * current building and packaging works, but is pretty icky
 
 ### Backlog
@@ -156,8 +161,8 @@ In no particular order, and with no particular commitments:
 * other federated login
 * multi-device management
 
-The S3 code is essentially an application of the Cognito auth infrastructure.  This
-should be made clearer and could be developed more.
+The S3 code is essentially a validation of the Cognito auth infrastructure: it is not
+a serious application and does not represent serious application structure.
 
 Cognito Sync isn't included, and isn't naturally within scope of cognito-auth.  But
 it is a natural application and it is tempting to try that as a complementary project.
@@ -206,8 +211,9 @@ Useful additional pointers:
 
 The `CognitoAuth` service is developed in-place in the context of the demo app.
 
-In effect, the demo app is the unit test suite for the `CognitoAuth` service: it's rather hard to
-unit test an authentication service any other way.
+In effect, the demo app is the unit test suite for the `CognitoAuth` service: it's not trivial to
+unit test an authentication service in the conventional way
+(confirmation codes and MFA, for example, rely on different communication channels).
 
 To build for release,
 
