@@ -23,6 +23,9 @@ var awsLambda = new AWS.Lambda();
 
 Promise.resolve()
   .then(function() {
+    return detachBucketPolicyFromAuthRole(settings.get('bucketAuthPolicyArn'));
+  })
+  .then(function() {
     return deletePolicy(settings.get('bucketAuthPolicyArn'));
   })
   .then(function() {
@@ -237,6 +240,25 @@ function deletePolicy(policyArn) {
         return reject(err);
       }
       console.log("deletePolicy -> %j", data);
+      return resolve(data);
+    });
+  });
+}
+
+function detachBucketPolicyFromAuthRole(policyArn) {
+  if (!config.phase.roles) {
+    return Promise.resolve();
+  }
+  var params = {
+    RoleName: config.AUTH_ROLE_NAME,
+    PolicyArn: policyArn,
+  };
+  return new Promise(function(resolve, reject) {
+    amazonIAM.detachRolePolicy(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+      console.log("detachRolePolicy -> %j", data);
       return resolve(data);
     });
   });
