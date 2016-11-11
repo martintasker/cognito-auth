@@ -19,6 +19,7 @@
   "homepage": "https://github.com/martintasker/cognito-auth",
   "ignore": [
     "**/.*",
+    "package.json",
     "demo/*",
     "webpack.config.js"
   ]

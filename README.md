@@ -28,7 +28,12 @@ In principle, same as any Angular package delivered via bower:
 * make your Angular application dependent on `mpt.cognito-auth`
 * use the `CognitoAuth` service to manage authentication; inject it as a dependency where needed
 
-But you'll also need to do back-end setup, and to use the `CognitoAuth` APIs in your app.
+Note that the AWS Cognito SDK and AWS Cognito Identity SDK dependencies are brought in with the above
+`bower install`: you don't need to include them also in your client project.  This makes your life
+easier, because these SDKs are a bit strangely packaged by Amazon.  However, you will need to include
+the AWS SDK in your project independently (`bower install aws-sdk`).
+
+Now you'll need to do back-end setup, and to use the `CognitoAuth` APIs in your app.
 
 ### Back-end setup
 
@@ -198,3 +203,14 @@ Useful additional pointers:
 * [using WebPack with Amazon Cognito Identity SDK for JavaScript](https://aws.amazon.com/blogs/mobile/using-webpack-with-the-amazon-cognito-identity-sdk-for-javascript/)
 
 ## How to build
+
+The `CognitoAuth` service is developed in-place in the context of the demo app.
+
+In effect, the demo app is the unit test suite for the `CognitoAuth` service: it's rather hard to
+unit test an authentication service any other way.
+
+To build for release,
+
+* use `npm run build` from the command line -- this simply runs `webpack`
+* commit, tag and push
+* have your clients update their dependency to bring in the appropriate tag

@@ -1,0 +1,25 @@
+{
+  "name": "cognito-auth",
+  "version": "0.0.0",
+  "description": "Angularized wrapper to AWS Cognito identity SDK",
+  "main": "",
+  "scripts": {
+    "test": "echo \"see README re testing\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martintasker/cognito-auth.git"
+  },
+  "keywords": [
+    "cognito",
+    "authentication",
+    "angular"
+  ],
+  "author": "Martin Tasker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/martintasker/cognito-auth/issues"
+  },
+  "homepage": "https://github.com/martintasker/cognito-auth#readme"
+}
