@@ -93,22 +93,34 @@
 	  setInitialCredentials();
 
 	  function setInitialCredentials() {
-	    var trace = true;
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.setInitialCredentials()");
+	    }
 	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 	      IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
 	    });
 	    var cognitoUser = userPool.getCurrentUser();
 	    if (!cognitoUser) {
-	      trace && console.log("retrieveUser: no user from previous session");
+	      if (CognitoAuthConfig.TRACE) {
+	        console.log("retrieveUser: no user from previous session");
+	      }
 	      $rootScope.$broadcast('CognitoUser.loggedOut');
 	      return;
 	    }
 	    cognitoUser.getSession(function(err, session) {
 	      if (err || !session.isValid()) {
-	        trace && err && console.log("retrieveUser: getSession error", err);
-	        trace && !err && console.log("retrieveUser: previous session is not valid");
+	        if (CognitoAuthConfig.TRACE) {
+	          if (err) {
+	            console.log("retrieveUser: getSession error", err);
+	          } else {
+	            console.log("retrieveUser: previous session is not valid");
+	          }
+	        }
 	        $rootScope.$broadcast('CognitoUser.loggedOut');
 	        return;
+	      }
+	      if (CognitoAuthConfig.TRACE) {
+	        console.log("getSession: session", session);
 	      }
 	      var logins = {};
 	      logins[cognitoIDP] = session.getIdToken().getJwtToken();
@@ -122,6 +134,9 @@
 	  }
 
 	  function setDefaultCredentials() {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.setDefaultCredentials()");
+	    }
 	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 	      IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
 	    });
@@ -129,6 +144,9 @@
 	  }
 
 	  function register(username, password, emailAddress, phoneNumber) {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.register() --", username, '(password)', emailAddress, phoneNumber);
+	    }
 	    var result = $q.defer();
 	    var attributeList = [];
 	    if (emailAddress) {
@@ -155,44 +173,101 @@
 	    return result.promise;
 	  }
 
-	  function login(username, password) {
+	  function confirmRegistration(username, code) {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.confirmRegistration() --", username, code);
+	    }
 	    var result = $q.defer();
 	    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
 	      Username: username,
 	      Pool: userPool
 	    });
-	    cognitoUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
-	      Username: username,
-	      Password: password,
-	    }), {
-	      onFailure: function(err) {
-	        console.log("cognitoUser.authenticateUser() error:", err);
+	    cognitoUser.confirmRegistration(code, true, function(err, res) {
+	      if (err) {
+	        console.log("cognitoUser.confirmRegistration() error:", err);
 	        result.reject(err);
-	      },
-	      onSuccess: function(res) {
-	        var logins = {};
-	        logins[cognitoIDP] = res.getIdToken().getJwtToken();
-	        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-	          IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
-	          Logins: logins
-	        });
-	        AWS.config.credentials.get(function(err) {
-	          if (err) {
-	            console.log("error:", err);
-	            result.reject(err);
-	            setDefaultCredentials();
-	            return;
-	          }
-	          currentUser = cognitoUser;
-	          $rootScope.$broadcast('CognitoUser.loggedIn');
-	          result.resolve(cognitoUser);
-	        });
-	      },
+	        return;
+	      }
+	      result.resolve();
 	    });
 	    return result.promise;
 	  }
 
+	  function login(username, password) {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.login() --", username, '(password)');
+	    }
+	    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+	      Username: username,
+	      Pool: userPool
+	    });
+
+	    var result = $q.defer();
+	    result.resolve();
+	    result.promise
+	      .then(function() {
+	        return doLogin();
+	      })
+	      .then(function() {
+	        return getCredentials();
+	      })
+	      .then(function() {
+	        currentUser = cognitoUser;
+	        $rootScope.$broadcast('CognitoUser.loggedIn');
+	      });
+	    return result.promise;
+
+	    function doLogin() {
+	      if (CognitoAuthConfig.TRACE) {
+	        console.log("CognitoUser.login() -- doLogin() --", username, '(password)');
+	      }
+	      var result = $q.defer();
+	      cognitoUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
+	        Username: username,
+	        Password: password,
+	      }), {
+	        onFailure: function(err) {
+	          console.log("cognitoUser.authenticateUser() error:", err);
+	          result.reject(err);
+	        },
+	        onSuccess: function(res) {
+	          if (CognitoAuthConfig.TRACE) {
+	            console.log("cognitoUser.authenticateUser() result:", res);
+	          }
+	          var logins = {};
+	          logins[cognitoIDP] = res.getIdToken().getJwtToken();
+	          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+	            IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
+	            Logins: logins
+	          });
+	          result.resolve(cognitoUser);
+	        },
+	      });
+	      return result.promise;
+	    }
+
+	    function getCredentials() {
+	      if (CognitoAuthConfig.TRACE) {
+	        console.log("CognitoUser.login() -- getCredentials()");
+	      }
+	      var result = $q.defer();
+	      AWS.config.credentials.get(function(err) {
+	        if (err) {
+	          console.log("error:", err);
+	          result.reject(err);
+	          setDefaultCredentials();
+	          return;
+	        }
+	        result.resolve(cognitoUser);
+	      });
+	      return result.promise;
+	    }
+	  }
+
 	  function logout() {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.logout()");
+	    }
 	    var result = $q.defer();
 	    if (!currentUser) {
 	      result.reject("no current user: cannot logout");
@@ -206,6 +281,9 @@
 	  }
 
 	  function deregister() {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.deregister()");
+	    }
 	    var result = $q.defer();
 	    if (!currentUser) {
 	      result.reject("no current user: cannot deregister");
@@ -217,8 +295,10 @@
 	        result.reject(err);
 	        return;
 	      }
-	      result.resolve();
+	      currentUser.clearCachedTokens(); // really AWS should handle this in the SDK
 	      currentUser = null;
+	      setDefaultCredentials();
+	      result.resolve();
 	    });
 	    return result.promise;
 	  }
@@ -234,6 +314,7 @@
 	  // public interface
 	  return {
 	    register: register, // username, password, emailAddress, phoneNumber -> promise of cognitoUser
+	    confirmRegistration: confirmRegistration, // username, code -> promise
 	    login: login, // username, password -> promise of cognitoUser
 	    logout: logout, // -> promise
 	    deregister: deregister, // -> promise
