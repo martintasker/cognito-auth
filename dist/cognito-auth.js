@@ -73,14 +73,6 @@
 
 	.factory('CognitoUser', function($q, $rootScope, CognitoAuthConfig) {
 
-	  /*
-	    You must define:
-	    AWS_REGION: as usual
-	    AWS_USER_POOL_ID: needs email as alias
-	    AWS_APP_ID: _without_ client secret, in above pool
-	    AWS_ID_POOL_ID: using above pool and app id, not allowing unauthenticated access
-	  */
-
 	  AWS.config.region = CognitoAuthConfig.AWS_REGION;
 
 	  var cognitoIDP = 'cognito-idp.' + CognitoAuthConfig.AWS_REGION + '.amazonaws.com/' + CognitoAuthConfig.AWS_USER_POOL_ID;
@@ -173,6 +165,26 @@
 	    return result.promise;
 	  }
 
+	  function resendConfirmationCode(username) {
+	    if (CognitoAuthConfig.TRACE) {
+	      console.log("CognitoUser.resendConfirmationCode() --", username);
+	    }
+	    var result = $q.defer();
+	    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+	      Username: username,
+	      Pool: userPool
+	    });
+	    cognitoUser.resendConfirmationCode(function(err, res) {
+	      if (err) {
+	        console.log("cognitoUser.resendConfirmationCode() error:", err);
+	        result.reject(err);
+	        return;
+	      }
+	      result.resolve();
+	    });
+	    return result.promise;
+	  }
+
 	  function confirmRegistration(username, code) {
 	    if (CognitoAuthConfig.TRACE) {
 	      console.log("CognitoUser.confirmRegistration() --", username, code);
@@ -204,7 +216,7 @@
 
 	    var result = $q.defer();
 	    result.resolve();
-	    result.promise
+	    return result.promise
 	      .then(function() {
 	        return doLogin();
 	      })
@@ -215,7 +227,6 @@
 	        currentUser = cognitoUser;
 	        $rootScope.$broadcast('CognitoUser.loggedIn');
 	      });
-	    return result.promise;
 
 	    function doLogin() {
 	      if (CognitoAuthConfig.TRACE) {
@@ -315,6 +326,7 @@
 	  return {
 	    register: register, // username, password, emailAddress, phoneNumber -> promise of cognitoUser
 	    confirmRegistration: confirmRegistration, // username, code -> promise
+	    resendConfirmationCode: resendConfirmationCode, // username -> promise
 	    login: login, // username, password -> promise of cognitoUser
 	    logout: logout, // -> promise
 	    deregister: deregister, // -> promise

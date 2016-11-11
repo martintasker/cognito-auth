@@ -136,7 +136,7 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 
 ### Done
 
-* registration using name and email address, confirmation with code, login, logout, de-registration, session pick-up from local storage
+* registration using name and email address, confirmation with code (which can be re-sent), login, logout, de-registration, session pick-up from local storage
 * setup script and demo app needed for the above
 * bower-installable `CognitoAuth` service
 * bucket setup and file upload, to demonstrate/validate that the access controls work
@@ -152,7 +152,7 @@ In no particular order, and with no particular commitments:
 
 * SMS option
 * email address (or phone number) as alias for username, so no distinct username needed
-* forgotten-password management and confirmation code re-send
+* forgotten-password management
 * admin-initiated registration
 * user profile management
 * proper MFA support
