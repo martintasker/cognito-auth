@@ -17,9 +17,6 @@ function homeDirectory() {
 exports.REGION = getDefaultRegion();
 exports.BUCKET_NAME = 'test.cognito-auth.example.io';
 exports.TEST_FILE_NAME = 'test.txt';
-exports.GATE_PRE_SIGNUP = false; // true implies the following are needed -- but this isn't working fully yet
-exports.PRE_SIGNUP_LAMBDA_NAME = 'CognitoAuthPreSignup';
-exports.PRE_SIGNUP_LAMBDA_S3_KEY = 'exec/pre-signup.js';
 exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';

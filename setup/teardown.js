@@ -19,7 +19,6 @@ var bucket = new AWS.S3({
 var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
-var awsLambda = new AWS.Lambda();
 
 Promise.resolve()
   .then(function() {
@@ -42,9 +41,6 @@ Promise.resolve()
   })
   .then(function() {
     return deleteUserPool(settings.get('userPoolId'));
-  })
-  .then(function() {
-    return deleteLambda(settings.get('preSignupLambdaArn'));
   })
   .then(deleteFiles)
   .then(deleteBucket)
@@ -89,69 +85,6 @@ function deleteFiles() {
       return resolve(data);
     });
   });
-}
-
-function deleteLambda(lambdaArn) {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
-
-  if (!config.GATE_PRE_SIGNUP) {
-    return Promise.resolve();
-  }
-
-  return Promise.resolve()
-    .then(deleteLambda)
-    .then(deleteLambdaSource);
-
-  function deleteLambdaSource() {
-    return new Promise(function(resolve, reject) {
-      var sp = subPaths(config.PRE_SIGNUP_LAMBDA_S3_KEY);
-      console.log("sp: %j", sp);
-      bucket.deleteObjects({
-        Delete: {
-          Objects: sp.map(function(subPath) {
-            return {
-              Key: subPath
-            };
-          }),
-          Quiet: false,
-        }
-      }, function(err, data) {
-        if (err) {
-          return reject(err);
-        }
-        console.log("deleteLambdaSource -> %j", data);
-        return resolve(data);
-      });
-    });
-
-    function subPaths(path) {
-      var qualifiers = path.split('/');
-      if (qualifiers.length === 1) {
-        return [qualifiers[0]];
-      } else {
-        var prePaths = subPaths(qualifiers.slice(0, -1).join('/'));
-        prePaths.push(path);
-        return prePaths;
-      }
-    }
-  }
-
-  function deleteLambda() {
-    console.log("deleteLambda", lambdaArn);
-    return new Promise(function(resolve, reject) {
-      awsLambda.deleteFunction({
-        FunctionName: lambdaArn
-      }, function(err, data) {
-        if (err) {
-          return reject(err);
-        }
-        console.log("deleteLambda -> %j", data);
-        return resolve(data);
-      });
-    });
-  }
 }
 
 function deleteUserPool(userPoolId) {
