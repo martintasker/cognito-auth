@@ -1,9 +1,9 @@
 'use strict';
 
 var settings = {
-  "userPoolId": "eu-west-1_G0YvzBXYO",
-  "applicationId": "2hrdoa7ujp03dpfq095c42uui1",
-  "identityPoolId": "eu-west-1:29d7b504-a857-4f4e-97aa-fdaf6d14b19a",
+  "userPoolId": "eu-west-1_DPG05EBd0",
+  "applicationId": "1agcc52aqj3c0vb9so8rcn3veg",
+  "identityPoolId": "eu-west-1:47b75868-564a-4553-b41c-d351fba13850",
   "bucketName": "test.cognito-auth.example.io"
 };
 

@@ -150,7 +150,6 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 
 In no particular order, and with no particular commitments:
 
-* customize welcome email
 * SMS option
 * email address (or phone number) as alias for username, so no distinct username needed
 * forgotten-password management and confirmation code re-send

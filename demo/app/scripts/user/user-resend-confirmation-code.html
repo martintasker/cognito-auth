@@ -1,0 +1,8 @@
+<form novalidate ng-submit="vm.resend()" name="form">
+  <fieldset ng-disabled="vm.interactionDisabled">
+    <div class="form-group">
+      <input type="text" name="username" ng-model="vm.username" placeholder="User name" required />
+      <button class="btn btn-primary" ng-disabled="vm.interactionDisabled || form.$invalid" type="submit">Re-send</button>
+    </div>
+  </fieldset>
+</form>
