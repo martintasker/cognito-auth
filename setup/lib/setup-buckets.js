@@ -85,7 +85,7 @@ function createBucketPolicy() {
         "s3:putObjectACL"
       ],
       Resource: [
-        "arn:aws:s3:::" + config.BUCKET_NAME + "/*"
+        "arn:aws:s3:::" + config.BUCKET_NAME + "/" + 'file.pdf',
       ]
     }]
   };
