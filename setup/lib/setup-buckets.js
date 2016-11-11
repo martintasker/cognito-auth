@@ -1,8 +1,5 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-
 var AWS = require('aws-sdk');
 
 var config = require('./config');
@@ -17,8 +14,6 @@ var bucket = new AWS.S3({
   }
 });
 
-var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
-var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
 
 function setupBuckets() {
@@ -70,24 +65,6 @@ function attachCORSToBucket() {
         return reject(err);
       }
       console.log("putBucketCors -> %j", data);
-      return resolve(data);
-    });
-  });
-}
-
-function writeFile() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
-  return new Promise(function(resolve, reject) {
-    bucket.upload({
-      Key: config.TEST_FILE_NAME,
-      Body: 'the quick brown fox jumps over the lazy dog'
-    }, function(err, data) {
-      if (err) {
-        return reject(err);
-      }
-      console.log("upload -> %j", data);
       return resolve(data);
     });
   });

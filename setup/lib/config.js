@@ -10,7 +10,7 @@ function getDefaultRegion() {
 }
 
 function homeDirectory() {
-  return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+  return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
 // override any of the below if you want to

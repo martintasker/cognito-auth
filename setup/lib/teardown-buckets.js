@@ -16,8 +16,6 @@ var bucket = new AWS.S3({
   }
 });
 
-var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
-var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
 
 function teardownBuckets() {
@@ -43,7 +41,6 @@ function deleteBucket() {
     bucket.deleteBucket(function(err, data) {
       if (err) {
         return reject(err);
-        return;
       }
       console.log("deleteBucket -> %j", data);
       return resolve(data);
