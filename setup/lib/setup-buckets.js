@@ -37,6 +37,7 @@ function createBucket() {
         return reject(err);
       }
       console.log("createBucket -> %j", data);
+      settings.set('bucketName', config.BUCKET_NAME);
       return resolve(data);
     });
   });

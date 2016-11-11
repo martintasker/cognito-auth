@@ -11,7 +11,7 @@ AWS.config.region = config.REGION;
 
 var bucket = new AWS.S3({
   params: {
-    Bucket: config.BUCKET_NAME,
+    Bucket: settings.get('bucketName'),
     region: config.REGION,
   }
 });
