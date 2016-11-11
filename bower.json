@@ -2,6 +2,12 @@
   "name": "cognito-auth",
   "description": "Angular auth code for Cognito",
   "main": "dist/cognito-auth.js",
+  "dependencies": {
+    "angular": "^1.5.0",
+    "aws-sdk": "aws-sdk-js#^2.4.7",
+    "aws-cognito-sdk": "https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/aws-cognito-sdk.js",
+    "amazon-cognito-identity": "https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js"
+  },
   "authors": [
     "Martin Tasker"
   ],
@@ -11,7 +17,7 @@
     "cognito",
     "angular"
   ],
-  "homepage": "",
+  "homepage": "https://github.com/martintasker/cognito-auth",
   "ignore": [
     "**/.*",
     "demo/*",
