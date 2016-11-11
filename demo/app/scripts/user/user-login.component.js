@@ -64,9 +64,6 @@ angular.module('demoApp')
   templateUrl: 'scripts/user/user-login.html',
   controller: 'UserLoginController',
   controllerAs: 'vm',
-  bindings: {
-    enableRegistration: '<',
-  }
 })
 
 ;

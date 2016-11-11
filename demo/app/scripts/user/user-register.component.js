@@ -14,6 +14,8 @@ angular.module('demoApp')
   // message: User.enableInteraction
   // message: User.disableInteraction
 
+  // implementation
+
   $scope.$on('User.disableInteraction', function() {
     self.interactionDisabled = true;
   });

@@ -9,10 +9,8 @@ angular.module('demoApp')
   self.isLoggedIn = false;
   self.errorMessage = '';
   self.successMessage = '';
-  // message: CognitoUser.loggedIn
-  // message: CognitoUser.loggedOut
-  // message: User.disableInteraction
-  // message: User.error
+
+  // implementation
 
   $scope.$on('User.disableInteraction', function() {
     self.errorMessage = '';

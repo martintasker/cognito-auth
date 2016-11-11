@@ -9,6 +9,8 @@ angular.module('demoApp')
   self.logout = logout;
   self.isLoggedIn = CognitoUser.isLoggedIn;
 
+  // implementation
+
   function logout() {
     $scope.$emit('User.disableInteraction');
     CognitoUser.logout()
@@ -26,9 +28,6 @@ angular.module('demoApp')
   templateUrl: 'scripts/user/user-logout.html',
   controller: 'UserLogoutController',
   controllerAs: 'vm',
-  bindings: {
-    enableDeregistration: '<',
-  }
 })
 
 ;
