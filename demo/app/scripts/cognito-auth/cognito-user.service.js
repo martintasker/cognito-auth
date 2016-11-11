@@ -138,7 +138,7 @@ angular.module('mpt.cognito-auth')
 
     var result = $q.defer();
     result.resolve();
-    result.promise
+    return result.promise
       .then(function() {
         return doLogin();
       })
@@ -149,7 +149,6 @@ angular.module('mpt.cognito-auth')
         currentUser = cognitoUser;
         $rootScope.$broadcast('CognitoUser.loggedIn');
       });
-    return result.promise;
 
     function doLogin() {
       if (CognitoAuthConfig.TRACE) {
