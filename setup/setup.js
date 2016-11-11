@@ -22,25 +22,37 @@ var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
 
 Promise.resolve()
-  // create a bucket, and send a test file to the bucket
-  .then(createBucket)
-  .then(attachCORSToBucket)
-  .then(writeFile)
-  // create a user pool, a client app for it, and an identity pool for both of them
-  .then(createUserPool)
-  .then(createUserPoolClient)
-  .then(createIdentityPool)
-  // create auth role, then attach it to the identity pool
-  .then(createAuthRole)
-  .then(createUnauthRole)
-  .then(attachRoles)
-  // create the bucket policy, and attach it to the auth role
-  .then(createBucketPolicy)
-  .then(attachBucketPolicyToAuthRole)
+  .then(setupPools)
+  .then(setupBuckets)
   // error catch-all
   .catch(function(reason) {
     console.log("problem: %j", typeof reason === 'object' ? reason.toString() : reason);
   });
+
+function setupPools() {
+  return Promise.resolve()
+    // create a user pool, a client app for it, and an identity pool for both of them
+    .then(createUserPool)
+    .then(createUserPoolClient)
+    .then(createIdentityPool)
+    // create auth role, then attach it to the identity pool
+    .then(createAuthRole)
+    .then(createUnauthRole)
+    .then(attachRoles)
+
+  ;
+}
+
+function setupBuckets() {
+  return Promise.resolve()
+    // create and configure bucket
+    .then(createBucket)
+    .then(attachCORSToBucket)
+    .then(createBucketPolicy)
+    .then(attachBucketPolicyToAuthRole)
+
+  ;
+}
 
 function createBucket() {
   if (!config.phase.buckets) {

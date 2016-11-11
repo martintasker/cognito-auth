@@ -21,32 +21,50 @@ var cognitoIdentity = new AWS.CognitoIdentity();
 var amazonIAM = new AWS.IAM();
 
 Promise.resolve()
-  .then(function() {
-    return detachBucketPolicyFromAuthRole(settings.get('bucketAuthPolicyArn'));
-  })
-  .then(function() {
-    return deletePolicy(settings.get('bucketAuthPolicyArn'));
-  })
-  .then(function() {
-    return deleteRole(config.UNAUTH_ROLE_NAME);
-  })
-  .then(function() {
-    return deleteRole(config.AUTH_ROLE_NAME);
-  })
-  .then(function() {
-    return deleteIdentityPool(settings.get('identityPoolId'));
-  })
-  .then(function() {
-    return deleteUserPoolClient(settings.get('userPoolId'), settings.get('applicationId'));
-  })
-  .then(function() {
-    return deleteUserPool(settings.get('userPoolId'));
-  })
-  .then(deleteFiles)
-  .then(deleteBucket)
+  .then(teardownBuckets)
+  .then(teardownPools)
+  // catch-all error handler
   .catch(function(reason) {
     console.log("problem: %j", typeof reason === 'object' ? reason.toString() : reason);
   });
+
+function teardownBuckets() {
+  return Promise.resolve()
+    // empty and remove bucket
+    .then(function() {
+      return detachBucketPolicyFromAuthRole(settings.get('bucketAuthPolicyArn'));
+    })
+    .then(function() {
+      return deletePolicy(settings.get('bucketAuthPolicyArn'));
+    })
+    .then(deleteFiles)
+    .then(deleteBucket)
+
+  ;
+}
+
+function teardownPools() {
+  return Promise.resolve()
+    // remove roles
+    .then(function() {
+      return deleteRole(config.UNAUTH_ROLE_NAME);
+    })
+    .then(function() {
+      return deleteRole(config.AUTH_ROLE_NAME);
+    })
+    // remove pools
+    .then(function() {
+      return deleteIdentityPool(settings.get('identityPoolId'));
+    })
+    .then(function() {
+      return deleteUserPoolClient(settings.get('userPoolId'), settings.get('applicationId'));
+    })
+    .then(function() {
+      return deleteUserPool(settings.get('userPoolId'));
+    })
+
+  ;
+}
 
 function deleteBucket() {
   if (!config.phase.buckets) {
