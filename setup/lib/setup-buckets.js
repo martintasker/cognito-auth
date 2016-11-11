@@ -71,7 +71,7 @@ function attachCORSToBucket() {
 }
 
 function createBucketPolicy() {
-  if (!config.phase.policies) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   var policy = {
@@ -109,7 +109,7 @@ function createBucketPolicy() {
 }
 
 function attachBucketPolicyToAuthRole() {
-  if (!config.phase.policies) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   var params = {

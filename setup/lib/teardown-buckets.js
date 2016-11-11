@@ -71,7 +71,7 @@ function deleteFiles() {
 }
 
 function deletePolicy(policyArn) {
-  if (!config.phase.roles) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   var params = {
@@ -89,7 +89,7 @@ function deletePolicy(policyArn) {
 }
 
 function detachBucketPolicyFromAuthRole(policyArn) {
-  if (!config.phase.roles) {
+  if (!config.phase.buckets) {
     return Promise.resolve();
   }
   var params = {
