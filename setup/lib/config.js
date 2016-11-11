@@ -15,7 +15,7 @@ function homeDirectory() {
 
 // override any of the below if you want to
 exports.REGION = getDefaultRegion();
-exports.BUCKET_NAME = 's3-test.data.databatix.com';
+exports.BUCKET_NAME = 'test.cognito-auth.example.io';
 exports.TEST_FILE_NAME = 'test.txt';
 exports.GATE_PRE_SIGNUP = false; // true implies the following are needed -- but this isn't working fully yet
 exports.PRE_SIGNUP_LAMBDA_NAME = 'CognitoAuthPreSignup';

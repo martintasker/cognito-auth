@@ -1,9 +1,9 @@
 'use strict';
 
 var settings = {
-  "userPoolId": "eu-west-1_X4PEVjSAX",
-  "applicationId": "218jeqiophtiq4p2f845u1t824",
-  "identityPoolId": "eu-west-1:5d044106-bf5e-4528-9f88-e95a185e9667",
+  "userPoolId": "eu-west-1_EIOglQ6EY",
+  "applicationId": "164lda775p23snr3qq25vttsa6",
+  "identityPoolId": "eu-west-1:049af02f-e3eb-4ddf-9654-a2a0ade46922",
 };
 
 angular.module('demoApp', [

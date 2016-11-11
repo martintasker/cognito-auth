@@ -6,7 +6,7 @@ angular.module('demoApp')
 
 .factory('UploadService', function($q, CognitoAuthConfig) {
 
-  var BUCKET_NAME = 's3-test.data.databatix.com';
+  var BUCKET_NAME = 'test.cognito-auth.example.io';
   var ROOT_PATH = "https://s3-" + CognitoAuthConfig.AWS_REGION + ".amazonaws.com/" + BUCKET_NAME;
 
   function upload(file, target, contentType, progressCb) {
