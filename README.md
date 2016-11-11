@@ -6,96 +6,168 @@ Aims:
   based on Angularization of recipes given in the
   [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README
 * deliver `CognitoAuth` as a ready-to-use library which can be installed in client projects using bower
+* implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
+  with code also available for copying and tweaking
 * implement a demo app using Angular and Boostrap, which gives 100% coverage of `CognitoAuth`,
   whose code is available for copying and tweaking -- but which is not necessarily conveniently
   packaged, and is not necessarily a sane user experience
-* implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
-  with code also available for copying and tweaking
 
-| directory | purpose |
-| --- | --- |
-| `demo/` | angular app, including source code for `CognitoAuth`; `bower.json` in here is for the app's role as client of other projects eg Angular etc |
-| `dist/` | build output directory for `cognito-auth.js`, available for bower installation |
-| `setup/` | contains customizable setup script |
-| `./` | `package.json` for build files such as `webpack.config.js` for whole project, and `bower.json` for client use of `cognito-auth.js` |
+This provides easy-to-use user management, and yet industrial-strength security.  No developer
+credentials are used in client code or seen client-side.  Security is assured by server setup
+(AWS's infrastructure, plus sensible configuration in the setup script in this project).
 
-## To do
+This is a long document: skip quickly to [using](#how-to-use), [features](#features),
+[background information](#background-information), [building](#how-to-build).
 
-Initial minimal functionality:
+## How to use
 
-* implement minimal AWS user lifecycle
-* have setup script support the above
+In principle, same as any Angular package delivered via bower:
 
-Later: implement post-minimal functionality.
+* install using `bower install --save martintasker/cognito-auth`
+* include a reference to the library in your HTML (hopefully your tooling does that for you)
+* make your Angular application dependent on `mpt.cognito-auth`
+* use the `CognitoAuth` service to manage authentication; inject it as a dependency where needed
 
-### Status
+But you'll also need to do back-end setup, and to use the `CognitoAuth` APIs in your app.
 
-Working on minimal functionality:
+### Back-end setup
 
-* `setup` and `teardown` scripts create user pools, identity pools
-* demo app handles registration _but_
-  * when setup is not gated on confirmation lambda, then ID is unconfirmed and so cannot automatically log in
-  * when setup is gated on lambda which would confirm, then privs to execute lambda are all wrong
+cognito-auth requires AWS setup in the back end.  Many tutorials/guides give step-by-step instructions
+about setting that up via the AWS console.  cognito-auth provides a setup script to do everything for
+you.  In principle, what you do is:
 
-## Levels of functionality
+* edit `setup/lib/config.js` to specify the bucket name, pool names, app name, role names etc that you want:
+  you **must** at least change the bucket name
+* `cd setup`, then `node setup`
+* open `setup/settings.json` in an editor, where you'll see the settings which need to be copied for your app's use
 
-### Minimal Cognito user lifecycle
+The `node setup` script assumes your admin/developer AWS credentials are available, eg from a previous `aws config` command
+on the CLI.
 
-Implement user registration and de-registration, login, logout, and recovery of previous session.
+The whole point of Cognito is that no developer credentials need to leak to the public.  Your users only see the pool IDs
+etc allocated during setup -- which are now in `setup/settings.json`.  Paste that information into the following snippet in your app:
 
-To keep it minimal, do not include password lifecycle management or user profile data management: this does place
-severe constraints in usefulness.
+```js
+'use strict';
 
-From the Cognito SDK page, this uses use cases
+// paste into the below from setup/settings.json
+// (the specific values below won't work: they'll be history by the time you read this)
+var settings = {
+  "userPoolId": "eu-west-1_X4PEVjSAX",
+  "applicationId": "218jeqiophtiq4p2f845u1t824",
+  "identityPoolId": "eu-west-1:5d044106-bf5e-4528-9f88-e95a185e9667",
+};
 
-* 1, register
-* 2, apply confirmation code
-* 13, delete
-* 4, login
-* 14, logout
-* 16, retrieve previous session
+angular.module('yourApp')
 
-### Enable broad Cognito-based user community
+.constant('CognitoAuthConfig', {
+  AWS_REGION: 'eu-west-1',
+  AWS_USER_POOL_ID: settings.userPoolId,
+  AWS_APP_ID: settings.applicationId,
+  AWS_ID_POOL_ID: settings.identityPoolId,
+  TRACE: false,
+})
 
-The numbers below refer to use cases with the Cognito Identity SDK readme:
+;
+```
 
-* password management: change 11, manage forgotten 12: the absolute minimum necessary to broaden user base
-* minimal MFA additionals: confirm code 2, re-send code 3: minimum necessary to sanely broaden user base
-* SMS-based login instead of email
-* customized welcome messages
-* admin-initiated registration 23: this is a simple add to minimal Cognito user lifecycle, enabling the site
-  developer/admin to invite users personally, but not scaling beyond a tight user community
-* profile management: view 5, verify 6, delete 7, update 8: change email address etc: with this, you have reasonable
-  support for a broad Cognito-managed user base
-* MFA management: enable 9, disable 10: allows users to change their MFA options.  It's perfectly fine not to permit
-  this--just have a site-wide policy that MFA is either required, or not required.
+If you like, you can paste the values directly into the `.constant`.  But, probably, you'll find yourself
+repeatedly setting up and tearing down during development.  If so, you'll find it easier to use the structure
+suggested above: you can just paste directly into the `settings` object without any fiddly editing.
 
-### Minimal Facebook user lifecycle
+### Testing the back-end setup
 
-Implement federated login using Facebook.
+The demo app allows you to test the setup:
 
-This permits scaling up of access without going through the complexities of proper ID lifecycle management.
+* edit `demo/app/scripts/app.js` and paste the settings from `setup/settings.js` into it, as shown above
+* run the app: `cd demo`, then `grunt serve`
+* press F12 to bring up a browser debug console
+* do **Register** with your username, email address and password
+* wait for the confirmation code to come to your email address, then do **Confirm** with your username and code
+* **Login** using your username and password
+* **Choose File** and upload it
 
-## Demo app
+If you got that far, then back-end setup worked ok and you know how to configure an app to connect to the back-end.
+You can **Logout**, **Deregister**, go through the cycle a few more times, just to make sure.
 
-Use
+If there are problems, you'll need to troubleshoot.  In the demo app, the `TRACE` option is set to true, which gives
+a verbose console log, which helps.  Do double-check that you pasted the settings from your latest run of `node setup`
+into your app.
 
-* `grunt` for building
-* `grunt serve` for preview
-* `grunt build` to build into `dist/` (this is actually `demo/dist/`, so doesn't clash with root-level `npm run build`)
+### Using cognito-auth in your own app
 
-## Technical information
+Once you've tested that the back-end setup works, you'll want to integrate the `CognitoAuth` service into your own app.
 
-### AWS Cognito
+Use the demo app as a starting-point, but **do not** just copy and tweak it wholesale:
 
-The key to everything in this `cognito-auth` project is the AWS Cognito Identity SDK.
-The following use cases are described in that project's `README`, and code is given there
-which is copied and Angularized in the `CognitoAuth` service:
+* use `app/scripts/app.js` to see how to inject the module dependency and configure overall
+* use the `CognitoUser.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
+  call the APIs
+* **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
+  application: instead, use the built library from bower
+* **do not** inflict on your users, the test-style UI of the demo app!  Integrate things properly
+  into a nice UI design, maybe using `ui-bootstrap` for dialogs or such.
 
-* 1, registering
-* 2, confirming using SMS confirmation code
+The demo app also contains some file uploading code which is perhaps a useful starting-point for your
+own S3-based applications of Cognito, but needs a lot of love to make it production-grade.
+
+### Fiddling with back-end setup
+
+If you need to tweak your buckets, pools etc after your initial `node setup`, you have a few options:
+
+* run `node teardown`, tweak `setup/lib/config.js`, and run `node setup` again: it destroys everything, including
+  registered users; so it's good during development, but inappropriate once you've switched to production
+* tweak things manually through the AWS console pages: this might be easiest during production
+* you could write your own scripts, use use `setup` and `teardown` phases tweaked via the `config` option: that might
+  be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
+  right thing for you, well, you'll know.
+
+## Features
+
+### Done
+
+* registration using name and email address, confirmation with code, login, logout, de-registration, session pick-up from local storage
+* setup script and demo app needed for the above
+* bucket setup and file upload demo/validation
+* bower-installable `CognitoAuth` service
+
+### Issues
+
+* S3 application is not sufficiently separated from Cognito auth basics
+* current building and packaging works, but is pretty icky
+
+### Backlog
+
+In no particular order, and with no particular commitments:
+
+* customize welcome email
+* SMS option
+* email address (or phone number) as alias for username, so no distinct username needed
+* forgotten-password management and confirmation code re-send
+* admin-initiated registration
+* user profile management
+* proper MFA support
+* federated login via Facebook
+* other federated login
+* multi-device management
+
+The S3 code is essentially an application of the Cognito auth infrastructure.  This
+should be made clearer and could be developed more.
+
+Cognito Sync isn't included, and isn't naturally within scope of cognito-auth.  But
+it is a natural application and it is tempting to try that as a complementary project.
+
+## Background information
+
+The key to everything in this `cognito-auth` project is
+[the AWS Cognito Identity SDK for JavaScript](https://github.com/aws/amazon-cognito-identity-js).
+The `CognitoAuth` service essentially comprises code adopted and Angularized from the use cases
+in that project's `README`:
+
+* 1, registering -- done (email only)
+* 2, confirming using SMS confirmation code -- done
 * 3, resending SMS confirmation code
-* 4, authentication and establishing session
+* 4, authentication and establishing session -- done
 * 5, user attributes
 * 6, verify user attribute
 * 7, delete user attribute
@@ -104,10 +176,10 @@ which is copied and Angularized in the `CognitoAuth` service:
 * 10, disabling MFA
 * 11, changing password for authenticated user
 * 12, starting and completing forgotten-password flow
-* 13, deleting authenticated user
-* 14, signing out
+* 13, deleting authenticated user -- done
+* 14, signing out -- done
 * 15, global sign-out
-* 16, retrieve current user from local storage
+* 16, retrieve current user from local storage -- done
 * 17, integrating cognito identity with cognito
 * 18, get devices for current user
 * 19, get information about the current device
@@ -115,17 +187,6 @@ which is copied and Angularized in the `CognitoAuth` service:
 * 21, do not remember a device
 * 22, forget the current device
 * 23, complete admin-initiated registration and login, by giving auth code and changing password
-
-Or, put another way:
-
-* minimal lifecycle: register 1, login 4, logout 14, 15, delete 13, retrieve session 16
-* admin-initiated registration 23
-* minimal MFA additionals: confirm code 2, re-send code 3
-* password management: change 11, manage forgotten 12
-* profile management: view 5, verify 6, delete 7, update 8
-* MFA management: enable 9, disable 10
-* cognito data-sharing use cases: 17, 18, 19, 20, 21, 22 -- these aren't really to do with
-  authentication direction and so would never be in the scope of the `CognitoAuth` service
 
 Useful additional pointers:
 
@@ -136,23 +197,4 @@ Useful additional pointers:
 * [configuring the SDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/browser-configuring.html)
 * [using WebPack with Amazon Cognito Identity SDK for JavaScript](https://aws.amazon.com/blogs/mobile/using-webpack-with-the-amazon-cognito-identity-sdk-for-javascript/)
 
-## Principles
-
-To begin with, you need a user pool.
-
-You also need IAM restricted access.
-
-* [configuring the SDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/browser-configuring.html)
-
-Cognito is better than two alternatives for access to AWS resources:
-
-* raw key-and-secret credentials: Cognito in fact enables you to securely exchange a userid+password at login time for a time-limited key+secret
-* OAuth authentication alone via Facebook and other authentication providers (though Cognito does play very nicely with that)
-
-For Cognito to work for a given application, you need
-
-* a user pool, which have a nice name and a hashy ID (and be in a region)
-* an application to access, which is associated with that pool, and also has name and ID
-* an identity pool, which enables access to unauthenticated identities
-* roles for both authenticated and unauthenticated identities
-* AWS resources, such as S3 buckets, whose access permissions are tied to the said roles
+## How to build
