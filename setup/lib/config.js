@@ -17,6 +17,9 @@ function homeDirectory() {
 exports.REGION = getDefaultRegion();
 exports.BUCKET_NAME = 'test.cognito-auth.example.io';
 exports.UPLOAD_FILE_NAME = 'file.pdf'; // the only user-uploadable file
+exports.SITE_NAME = 'Cognito-Auth Test Site';
+exports.CONFIRMATION_EMAIL_SUBJECT = 'Confirmation code from ' + exports.SITE_NAME;
+exports.CONFIRMATION_EMAIL_BODY = 'Your code is: {####}.  Enter it in the confirmation dialog.';
 exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';

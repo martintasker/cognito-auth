@@ -34,8 +34,10 @@ function createUserPool() {
     PoolName: config.USER_POOL_NAME,
     AliasAttributes: ['email'], // sign in with email ID: this is what cognito-auth supports currently; 'phone_number' is also interesting
     AutoVerifiedAttributes: ['email'], // AWS recommends this setting, if the corresponding AliasAttribute is used
+    EmailVerificationSubject: config.CONFIRMATION_EMAIL_SUBJECT,
+    EmailVerificationMessage: config.CONFIRMATION_EMAIL_BODY,
     LambdaConfig: {},
-    MfaConfiguration: 'OFF', // this is all that cognito-auth will support, with minimum-lifecycle functionality
+    MfaConfiguration: 'OFF', // more lifecycle hooks would be needed to support 'ON'
     Policies: {
       PasswordPolicy: { // feel free to configure
         MinimumLength: 8,
