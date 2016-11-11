@@ -18,7 +18,6 @@ var amazonIAM = new AWS.IAM();
 
 function setupBuckets() {
   return Promise.resolve()
-    // create and configure bucket
     .then(createBucket)
     .then(attachCORSToBucket)
     .then(createBucketPolicy)
@@ -85,7 +84,7 @@ function createBucketPolicy() {
         "s3:putObjectACL"
       ],
       Resource: [
-        "arn:aws:s3:::" + config.BUCKET_NAME + "/" + 'file.pdf',
+        "arn:aws:s3:::" + config.BUCKET_NAME + "/" + config.UPLOAD_FILE_NAME,
       ]
     }]
   };

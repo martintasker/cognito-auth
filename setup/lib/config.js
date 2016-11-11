@@ -16,7 +16,7 @@ function homeDirectory() {
 // override any of the below if you want to
 exports.REGION = getDefaultRegion();
 exports.BUCKET_NAME = 'test.cognito-auth.example.io';
-exports.TEST_FILE_NAME = 'test.txt';
+exports.UPLOAD_FILE_NAME = 'file.pdf'; // the only user-uploadable file
 exports.USER_POOL_NAME = 'cognito-auth Test User Pool';
 exports.APP_NAME = 'cognito-auth Test Application';
 exports.POOL_NAME = 'CognitoAuthTestIdentityPool';

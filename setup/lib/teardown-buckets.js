@@ -20,7 +20,6 @@ var amazonIAM = new AWS.IAM();
 
 function teardownBuckets() {
   return Promise.resolve()
-    // empty and remove bucket
     .then(function() {
       return detachBucketPolicyFromAuthRole(settings.get('bucketAuthPolicyArn'));
     })
@@ -57,9 +56,9 @@ function deleteFiles() {
     bucket.deleteObjects({
       Delete: {
         Objects: [{
-          Key: config.TEST_FILE_NAME,
+          Key: config.UPLOAD_FILE_NAME,
         }],
-        Quiet: false,
+        Quiet: true,
       }
     }, function(err, data) {
       if (err) {
