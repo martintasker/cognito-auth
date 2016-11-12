@@ -53,6 +53,7 @@ angular.module('mpt.cognito-auth')
         Logins: logins
       });
       currentUser = cognitoUser;
+      trace("AWS.config.credentials constructed", AWS.config.credentials);
       $rootScope.$broadcast('CognitoUser.loggedIn');
     });
   }
@@ -88,6 +89,7 @@ angular.module('mpt.cognito-auth')
         return;
       }
       var cognitoUser = res.user;
+      trace("success");
       result.resolve(cognitoUser);
     });
     return result.promise;
@@ -126,6 +128,7 @@ angular.module('mpt.cognito-auth')
       }
       result.resolve();
     });
+    trace("success");
     return result.promise;
   }
 
@@ -147,6 +150,7 @@ angular.module('mpt.cognito-auth')
       })
       .then(function() {
         currentUser = cognitoUser;
+        trace("login: overall success");
         $rootScope.$broadcast('CognitoUser.loggedIn');
       });
 
@@ -169,6 +173,7 @@ angular.module('mpt.cognito-auth')
             IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
             Logins: logins
           });
+          trace("doLogin: success");
           result.resolve(cognitoUser);
         },
       });
@@ -185,6 +190,7 @@ angular.module('mpt.cognito-auth')
           setDefaultCredentials();
           return;
         }
+        trace("getCredentials: success", AWS.config.credentials);
         result.resolve(cognitoUser);
       });
       return result.promise;
@@ -202,6 +208,7 @@ angular.module('mpt.cognito-auth')
     currentUser = null;
     setDefaultCredentials();
     result.resolve();
+    trace("success");
     return result.promise;
   }
 
@@ -220,6 +227,7 @@ angular.module('mpt.cognito-auth')
       }
       currentUser.clearCachedTokens(); // really AWS should handle this in the SDK
       currentUser = null;
+      trace("deregister: success");
       setDefaultCredentials();
       result.resolve();
     });
@@ -235,7 +243,7 @@ angular.module('mpt.cognito-auth')
     });
     cognitoUser.forgotPassword({
       onSuccess: function() {
-        trace("CognitoUser.forgotPassword() -- success");
+        trace("success");
         result.resolve();
       },
       onFailure: function(err) {
@@ -255,6 +263,7 @@ angular.module('mpt.cognito-auth')
     });
     cognitoUser.confirmPassword(code, password, {
       onSuccess: function() {
+        trace("success");
         result.resolve();
       },
       onFailure: function(err) {
