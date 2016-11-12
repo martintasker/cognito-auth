@@ -248,6 +248,51 @@ angular.module('mpt.cognito-auth')
     return result.promise;
   }
 
+  function requestNewPasswordCode(username) {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.requestNewPasswordCode() --", username);
+    }
+    var result = $q.defer();
+    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+      Username: username,
+      Pool: userPool
+    });
+    cognitoUser.forgotPassword({
+      onSuccess: function() {
+        if (CognitoAuthConfig.TRACE) {
+          console.log("CognitoUser.forgotPassword() -- success");
+        }
+        result.resolve();
+      },
+      onFailure: function(err) {
+        console.log("cognitoUser.forgotPassword() error:", err);
+        result.reject(err);
+      },
+    });
+    return result.promise;
+  }
+
+  function setPasswordWithCode(username, password, code) {
+    if (CognitoAuthConfig.TRACE) {
+      console.log("CognitoUser.setPasswordWithCode() --", username, '(password)', code);
+    }
+    var result = $q.defer();
+    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+      Username: username,
+      Pool: userPool
+    });
+    cognitoUser.confirmPassword(code, password, {
+      onSuccess: function() {
+        result.resolve();
+      },
+      onFailure: function(err) {
+        console.log("cognitoUser.confirmPassword() error:", err);
+        result.reject(err);
+      },
+    });
+    return result.promise;
+  }
+
   function current() {
     return currentUser;
   }
@@ -264,6 +309,8 @@ angular.module('mpt.cognito-auth')
     login: login, // username, password -> promise of cognitoUser
     logout: logout, // -> promise
     deregister: deregister, // -> promise
+    requestNewPasswordCode: requestNewPasswordCode, // username -> promise
+    setPasswordWithCode: setPasswordWithCode, // username, password, code -> promise
     current: current, // -> cognitoUser or null
     isLoggedIn: isLoggedIn, // -> true/false
     // message broadcast to root: 'CognitoUser.loggedIn'
