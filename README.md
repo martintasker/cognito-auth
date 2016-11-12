@@ -175,7 +175,7 @@ in that project's `README`:
 
 * 1, registering -- done (email only)
 * 2, confirming using SMS confirmation code -- done
-* 3, resending SMS confirmation code
+* 3, resending SMS confirmation code -- done
 * 4, authentication and establishing session -- done
 * 5, user attributes
 * 6, verify user attribute
