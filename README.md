@@ -4,7 +4,8 @@ Aims:
 
 * implement Angular-based `CognitoAuth` service with major cognito authentication functionality,
   based on Angularization of recipes given in the
-  [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README
+  [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README,
+  and a uniformly promise-based API
 * deliver `CognitoAuth` as a ready-to-use library which can be installed in client projects using bower
 * implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
   with code also available for copying and tweaking
