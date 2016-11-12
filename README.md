@@ -4,8 +4,8 @@ Aims:
 
 * implement Angular-based `CognitoAuth` service with major cognito authentication functionality,
   based on Angularization of recipes given in the
-  [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README,
-  and a uniformly promise-based API
+  [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README
+* use a uniformly promise-based API to the Angular service (no callbacks)
 * deliver `CognitoAuth` as a ready-to-use library which can be installed in client projects using bower
 * implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
   with code also available for copying and tweaking
@@ -137,8 +137,8 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 
 ### Done
 
-* registration using name and email address, confirmation with code, login, logout, de-registration, session pick-up from local storage
-* re-send confirmation code (during registration)
+* registration using name and email address, confirmation with code (optionally re-sendable), de-registration
+* login, session pick-up from local storage on browser refresh, logout
 * send forgotten-password code and reset password (after registered)
 * setup script and demo app needed for the above
 * bower-installable `CognitoAuth` service
@@ -147,15 +147,16 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 ### Issues
 
 * S3 application should be more cleanly separated from Cognito auth basics
-* current building and packaging works, but is pretty icky
+* current building and packaging works, but is a bit icky
 
 ### Backlog
 
 In no particular order, and with no particular commitments:
 
-* SMS option
-* email address (or phone number) as alias for username, so no distinct username needed
+* email address as alias for username, so no distinct username needed
+* use of phone number as alias, and SMS for sending confirmation code
 * admin-initiated registration
+* change password
 * user profile management
 * proper MFA support
 * federated login via Facebook
