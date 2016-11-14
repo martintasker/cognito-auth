@@ -234,6 +234,21 @@ angular.module('mpt.cognito-auth')
     return result.promise;
   }
 
+  function changePassword(oldPassword, password) {
+    trace("CognitoUser.changePassword() --", '(oldPassword)', '(password)');
+    var result = $q.defer();
+    currentUser.changePassword(oldPassword, password, function(err) {
+      if (err) {
+        console.log("cognitoUser.changePassword() error:", err);
+        result.reject(err);
+        return;
+      }
+      trace("changePassword: success");
+      result.resolve();
+    });
+    return result.promise;
+  }
+
   function requestNewPasswordCode(username) {
     trace("CognitoUser.requestNewPasswordCode() --", username);
     var result = $q.defer();
@@ -290,6 +305,7 @@ angular.module('mpt.cognito-auth')
     login: login, // username, password -> promise of cognitoUser
     logout: logout, // -> promise
     deregister: deregister, // -> promise
+    changePassword: changePassword, // oldPassword, password -> promise
     requestNewPasswordCode: requestNewPasswordCode, // username -> promise
     setPasswordWithCode: setPasswordWithCode, // username, password, code -> promise
     current: current, // -> cognitoUser or null

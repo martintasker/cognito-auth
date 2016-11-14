@@ -140,6 +140,7 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 * registration using name and email address, confirmation with code (optionally re-sendable), de-registration
 * login, session pick-up from local storage on browser refresh, logout
 * send forgotten-password code and reset password (after registered)
+* change password (while logged in)
 * setup script and demo app needed for the above
 * bower-installable `CognitoAuth` service
 * bucket setup and file upload, to demonstrate/validate that the access controls work
@@ -156,7 +157,6 @@ In no particular order, and with no particular commitments:
 * email address as alias for username, so no distinct username needed
 * use of phone number as alias, and SMS for sending confirmation code
 * admin-initiated registration
-* change password
 * user profile management
 * proper MFA support
 * federated login via Facebook
@@ -188,7 +188,7 @@ in that project's `README`:
 * 8, update user attributes
 * 9, enabling MFA
 * 10, disabling MFA
-* 11, changing password for authenticated user
+* 11, changing password for authenticated user -- done
 * 12, starting and completing forgotten-password flow -- done
 * 13, deleting authenticated user -- done
 * 14, signing out -- done
