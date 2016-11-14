@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argparse": "github:nodeca/argparse",
     "aws-sdk": "^2.6.12",
     "ini": "^1.3.4"
   }
