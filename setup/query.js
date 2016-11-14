@@ -7,25 +7,16 @@ var settings = require('./lib/settings');
 
 AWS.config.region = config.REGION;
 
-var bucket = new AWS.S3({
-  params: {
-    Bucket: config.BUCKET_NAME,
-    region: config.REGION,
-  }
-});
-
-var cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 var cognitoIdentity = new AWS.CognitoIdentity();
 
 Promise.resolve()
-  .then(function() {
-    return queryIdentityPoolRoles(settings.get('identityPoolId'));
-  })
+  .then(queryIdentityPoolRoles)
   .catch(function(reason) {
     console.log("problem: %j", reason);
   });
 
-function queryIdentityPoolRoles(identityPoolId) {
+function queryIdentityPoolRoles() {
+  var identityPoolId = settings.get('identityPoolId');
   return new Promise(function(resolve, reject) {
     cognitoIdentity.getIdentityPoolRoles({
       IdentityPoolId: identityPoolId,
