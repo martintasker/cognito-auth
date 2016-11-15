@@ -131,7 +131,7 @@ Once you've tested that the back-end setup works, you'll want to integrate the `
 Use the demo app as a starting-point, but **do not** just copy and tweak it wholesale:
 
 * use `app/scripts/app.js` to see how to inject the module dependency and configure overall
-* use the `CognitoUser.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
+* use the `CognitoAuth.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
   call the APIs
 * **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
   application: instead, use the built `cognito-auth` library from bower

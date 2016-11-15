@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserRegisterController', function($scope, CognitoUser) {
+.controller('UserRegisterController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -26,7 +26,7 @@ angular.module('demoApp')
 
   function register() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.register(self.username, self.password, self.email, '')
+    CognitoAuth.register(self.username, self.password, self.email, '')
       .then(function(cognitoUser) {
         self.username = '';
         self.password = '';

@@ -25,11 +25,11 @@ angular.module('demoApp')
     self.successMessage = message;
   });
 
-  $scope.$on('CognitoUser.loggedIn', function() {
+  $scope.$on('CognitoAuth.loggedIn', function() {
     self.isLoggedIn = true;
   });
 
-  $scope.$on('CognitoUser.loggedOut', function() {
+  $scope.$on('CognitoAuth.loggedOut', function() {
     self.isLoggedIn = false;
   });
 })

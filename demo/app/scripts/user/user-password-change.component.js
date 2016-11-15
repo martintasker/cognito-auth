@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserPasswordChangeController', function($scope, CognitoUser) {
+.controller('UserPasswordChangeController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -10,7 +10,7 @@ angular.module('demoApp')
   self.oldPassword = "";
   self.password = "";
   self.interactionDisabled = false;
-  self.isLoggedIn = CognitoUser.isLoggedIn;
+  self.isLoggedIn = CognitoAuth.isLoggedIn;
   // message: User.enableInteraction
   // message: User.disableInteraction
 
@@ -26,7 +26,7 @@ angular.module('demoApp')
 
   function change() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.changePassword(self.oldPassword, self.password)
+    CognitoAuth.changePassword(self.oldPassword, self.password)
       .then(function(cognitoUser) {
         self.oldPassword = '';
         self.password = '';

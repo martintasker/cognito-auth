@@ -2,18 +2,18 @@
 
 angular.module('demoApp')
 
-.controller('UserLogoutController', function($scope, CognitoUser) {
+.controller('UserLogoutController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
   self.logout = logout;
-  self.isLoggedIn = CognitoUser.isLoggedIn;
+  self.isLoggedIn = CognitoAuth.isLoggedIn;
 
   // implementation
 
   function logout() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.logout()
+    CognitoAuth.logout()
       .then(function() {
         $scope.$emit('User.enableInteraction');
       })

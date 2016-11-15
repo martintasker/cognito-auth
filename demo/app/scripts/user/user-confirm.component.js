@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserConfirmController', function($scope, CognitoUser) {
+.controller('UserConfirmController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -23,7 +23,7 @@ angular.module('demoApp')
 
   function confirm() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.confirmRegistration(self.username, self.code)
+    CognitoAuth.confirmRegistration(self.username, self.code)
       .then(function() {
         self.username = '';
         self.code = '';

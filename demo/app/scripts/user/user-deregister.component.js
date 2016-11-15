@@ -2,16 +2,16 @@
 
 angular.module('demoApp')
 
-.controller('UserDeregisterController', function($scope, CognitoUser) {
+.controller('UserDeregisterController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
   self.deregister = deregister;
-  self.isLoggedIn = CognitoUser.isLoggedIn;
+  self.isLoggedIn = CognitoAuth.isLoggedIn;
 
   function deregister() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.deregister()
+    CognitoAuth.deregister()
       .then(function() {
         $scope.$emit('User.success', 'Deregistration successful');
         $scope.$emit('User.enableInteraction');

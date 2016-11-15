@@ -5,7 +5,7 @@
 
 angular.module('mpt.cognito-auth')
 
-.factory('CognitoUser', function($q, $rootScope, CognitoAuthConfig) {
+.factory('CognitoAuth', function($q, $rootScope, CognitoAuthConfig) {
 
   AWS.config.region = CognitoAuthConfig.AWS_REGION;
 
@@ -28,14 +28,14 @@ angular.module('mpt.cognito-auth')
   }
 
   function setInitialCredentials() {
-    trace("CognitoUser.setInitialCredentials()");
+    trace("CognitoAuth.setInitialCredentials()");
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
     });
     var cognitoUser = userPool.getCurrentUser();
     if (!cognitoUser) {
       trace("retrieveUser: no user from previous session");
-      $rootScope.$broadcast('CognitoUser.loggedOut');
+      $rootScope.$broadcast('CognitoAuth.loggedOut');
       return;
     }
     cognitoUser.getSession(function(err, session) {
@@ -45,7 +45,7 @@ angular.module('mpt.cognito-auth')
         } else {
           trace("retrieveUser: previous session is not valid");
         }
-        $rootScope.$broadcast('CognitoUser.loggedOut');
+        $rootScope.$broadcast('CognitoAuth.loggedOut');
         return;
       }
       trace("getSession: session", session);
@@ -57,20 +57,20 @@ angular.module('mpt.cognito-auth')
       });
       currentUser = cognitoUser;
       trace("AWS.config.credentials constructed", AWS.config.credentials);
-      $rootScope.$broadcast('CognitoUser.loggedIn');
+      $rootScope.$broadcast('CognitoAuth.loggedIn');
     });
   }
 
   function setDefaultCredentials() {
-    trace("CognitoUser.setDefaultCredentials()");
+    trace("CognitoAuth.setDefaultCredentials()");
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
     });
-    $rootScope.$broadcast('CognitoUser.loggedOut');
+    $rootScope.$broadcast('CognitoAuth.loggedOut');
   }
 
   function register(username, password, emailAddress, phoneNumber) {
-    trace("CognitoUser.register() --", username, '(password)', emailAddress, phoneNumber);
+    trace("CognitoAuth.register() --", username, '(password)', emailAddress, phoneNumber);
     var result = $q.defer();
     var attributeList = [];
     if (emailAddress) {
@@ -99,7 +99,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function resendConfirmationCode(username) {
-    trace("CognitoUser.resendConfirmationCode() --", username);
+    trace("CognitoAuth.resendConfirmationCode() --", username);
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -117,7 +117,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function confirmRegistration(username, code) {
-    trace("CognitoUser.confirmRegistration() --", username, code);
+    trace("CognitoAuth.confirmRegistration() --", username, code);
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -136,7 +136,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function login(username, password) {
-    trace("CognitoUser.login() --", username, '(password)');
+    trace("CognitoAuth.login() --", username, '(password)');
     if (username) {
       partialUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
         Username: username,
@@ -153,19 +153,19 @@ angular.module('mpt.cognito-auth')
         currentUser = partialUser;
         partialUser = null;
         trace("authenticate: overall success");
-        $rootScope.$broadcast('CognitoUser.loggedIn');
+        $rootScope.$broadcast('CognitoAuth.loggedIn');
       })
       .catch(function(reason) {
         var oldCurrentUser = currentUser;
         currentUser = null;
         if (oldCurrentUser) {
-          $rootScope.$broadcast('CognitoUser.loggedOut');
+          $rootScope.$broadcast('CognitoAuth.loggedOut');
         }
         throw reason;
       });
 
     function doLogin() {
-      trace("CognitoUser.login() -- doLogin() --", username, '(password)');
+      trace("CognitoAuth.login() -- doLogin() --", username, '(password)');
       var result = $q.defer();
       if (username) {
         partialUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
@@ -197,7 +197,7 @@ angular.module('mpt.cognito-auth')
         },
         newPasswordRequired: function(attribsGiven, attribsRequired) {
           trace("authenticate: newPasswordRequired, attribsGiven:", attribsGiven, "attribsRequired:", attribsRequired);
-          $rootScope.$broadcast('CognitoUser.newPasswordRequired', {
+          $rootScope.$broadcast('CognitoAuth.newPasswordRequired', {
             attribsGiven: attribsGiven,
             attribsRequired: attribsRequired
           });
@@ -213,7 +213,7 @@ angular.module('mpt.cognito-auth')
         result.resolve(partialUser);
         return result.promise;
       }
-      trace("CognitoUser.login() -- getCredentials()", AWS.config.credentials);
+      trace("CognitoAuth.login() -- getCredentials()", AWS.config.credentials);
       AWS.config.credentials.get(function(err) {
         if (err) {
           console.log("error:", err);
@@ -229,7 +229,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function logout() {
-    trace("CognitoUser.logout()");
+    trace("CognitoAuth.logout()");
     var result = $q.defer();
     if (!currentUser) {
       result.reject("no current user: cannot logout");
@@ -244,7 +244,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function deregister() {
-    trace("CognitoUser.deregister()");
+    trace("CognitoAuth.deregister()");
     var result = $q.defer();
     if (!currentUser) {
       result.reject("no current user: cannot deregister");
@@ -266,7 +266,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function changePassword(oldPassword, password) {
-    trace("CognitoUser.changePassword() --", '(oldPassword)', '(password)');
+    trace("CognitoAuth.changePassword() --", '(oldPassword)', '(password)');
     var result = $q.defer();
     currentUser.changePassword(oldPassword, password, function(err) {
       if (err) {
@@ -281,7 +281,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function requestNewPasswordCode(username) {
-    trace("CognitoUser.requestNewPasswordCode() --", username);
+    trace("CognitoAuth.requestNewPasswordCode() --", username);
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -301,7 +301,7 @@ angular.module('mpt.cognito-auth')
   }
 
   function setPasswordWithCode(username, password, code) {
-    trace("CognitoUser.setPasswordWithCode() --", username, '(password)', code);
+    trace("CognitoAuth.setPasswordWithCode() --", username, '(password)', code);
     var result = $q.defer();
     var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
       Username: username,
@@ -341,9 +341,9 @@ angular.module('mpt.cognito-auth')
     setPasswordWithCode: setPasswordWithCode, // username, password, code -> promise
     current: current, // -> cognitoUser or null
     isLoggedIn: isLoggedIn, // -> true/false
-    // message broadcast to root: 'CognitoUser.loggedIn'
-    // message broadcast to root: 'CognitoUser.loggedOut'
-    // message broadcast to root: 'CognitoUser.newPasswordRequired', {attribsGiven, attribsRequired}
+    // message broadcast to root: 'CognitoAuth.loggedIn'
+    // message broadcast to root: 'CognitoAuth.loggedOut'
+    // message broadcast to root: 'CognitoAuth.newPasswordRequired', {attribsGiven, attribsRequired}
   };
 
 })

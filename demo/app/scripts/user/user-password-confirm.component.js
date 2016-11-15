@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserPasswordConfirmController', function($scope, CognitoUser) {
+.controller('UserPasswordConfirmController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -26,7 +26,7 @@ angular.module('demoApp')
 
   function confirm() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.setPasswordWithCode(self.username, self.password, self.code)
+    CognitoAuth.setPasswordWithCode(self.username, self.password, self.code)
       .then(function(cognitoUser) {
         self.username = '';
         self.password = '';

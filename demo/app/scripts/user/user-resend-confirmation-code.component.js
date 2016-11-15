@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserResendConfirmationCodeController', function($scope, CognitoUser) {
+.controller('UserResendConfirmationCodeController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -24,7 +24,7 @@ angular.module('demoApp')
 
   function resend() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.resendConfirmationCode(self.username)
+    CognitoAuth.resendConfirmationCode(self.username)
       .then(function() {
         self.username = '';
         $scope.form.$setPristine();

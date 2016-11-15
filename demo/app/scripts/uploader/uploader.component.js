@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UploaderController', function($scope, CognitoUser, UploadService) {
+.controller('UploaderController', function($scope, CognitoAuth, UploadService) {
 
   // public interface
   var self = this;
@@ -12,7 +12,7 @@ angular.module('demoApp')
   self.uploaded = false;
   self.upload = upload;
   self.target = UploadService.ROOT_PATH + '/' + self.path;
-  self.isLoggedIn = CognitoUser.isLoggedIn;
+  self.isLoggedIn = CognitoAuth.isLoggedIn;
 
   // implementation
 

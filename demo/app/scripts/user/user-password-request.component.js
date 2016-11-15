@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserPasswordRequestController', function($scope, CognitoUser) {
+.controller('UserPasswordRequestController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -24,7 +24,7 @@ angular.module('demoApp')
 
   function request() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.requestNewPasswordCode(self.username)
+    CognitoAuth.requestNewPasswordCode(self.username)
       .then(function() {
         self.username = '';
         $scope.form.$setPristine();

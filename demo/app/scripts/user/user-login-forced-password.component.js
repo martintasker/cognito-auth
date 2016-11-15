@@ -2,7 +2,7 @@
 
 angular.module('demoApp')
 
-.controller('UserLoginForcedPasswordController', function($scope, CognitoUser) {
+.controller('UserLoginForcedPasswordController', function($scope, CognitoAuth) {
 
   // public interface
   var self = this;
@@ -22,7 +22,7 @@ angular.module('demoApp')
 
   function completeLogin() {
     $scope.$emit('User.disableInteraction');
-    CognitoUser.login(null, self.password)
+    CognitoAuth.login(null, self.password)
       .then(function(cognitoUser) {
         self.password = '';
         $scope.form.$setPristine();
