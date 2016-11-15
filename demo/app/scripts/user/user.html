@@ -56,6 +56,7 @@
 <div class="row">
   <div class="col-xs-12">
     <h2>Login lifecycle</h2>
+    <p>{{vm.isLoggedIn ? 'Logged In' : 'Not logged in'}}</p>
   </div>
   <div class="col-xs-2">
     Login
@@ -63,7 +64,13 @@
   <div class="col-xs-10">
     <user-login>
     </user-login>
-    <p>{{vm.isLoggedIn ? 'Logged In' : 'Not logged in'}}</p>
+  </div>
+  <div class="col-xs-2">
+    Forced password
+  </div>
+  <div class="col-xs-10">
+    <user-login-forced-password>
+    </user-login-forced-password>
   </div>
   <div class="col-xs-2">
     Logout

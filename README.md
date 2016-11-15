@@ -133,11 +133,30 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
   be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
   right thing for you, well, you'll know.
 
+### Admin-initiated registration
+
+You can register a user using
+
+```shell
+node add-user -u username -e email_username@email_host
+```
+
+and you can find out what users have been so registered using
+
+```shell
+node query
+```
+
+Admin-initiated registration causes an email to be sent to the specified address, with an initial password.
+You then (attempt to) login in the usual way, with the given username and password.  You are then forced
+to enter a different password (in the **Forced Password** form) to complete the login.
+
 ## Features
 
 ### Done
 
 * registration using name and email address, confirmation with code (optionally re-sendable), de-registration
+* admin-initiated registration
 * login, session pick-up from local storage on browser refresh, logout
 * send forgotten-password code and reset password (after registered)
 * change password (while logged in)
@@ -156,7 +175,6 @@ In no particular order, and with no particular commitments:
 
 * email address as alias for username, so no distinct username needed
 * use of phone number as alias, and SMS for sending confirmation code
-* admin-initiated registration
 * user profile management
 * proper MFA support
 * federated login via Facebook
@@ -200,7 +218,7 @@ in that project's `README`:
 * 20, remember a device
 * 21, do not remember a device
 * 22, forget the current device
-* 23, complete admin-initiated registration and login, by giving auth code and changing password
+* 23, complete admin-initiated registration and login, by giving auth code and changing password -- done
 
 Useful additional pointers:
 

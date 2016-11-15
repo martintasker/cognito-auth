@@ -11,11 +11,14 @@ angular.module('mpt.cognito-auth')
 
   var cognitoIDP = 'cognito-idp.' + CognitoAuthConfig.AWS_REGION + '.amazonaws.com/' + CognitoAuthConfig.AWS_USER_POOL_ID;
 
-  var currentUser = null;
   var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
     UserPoolId: CognitoAuthConfig.AWS_USER_POOL_ID,
     ClientId: CognitoAuthConfig.AWS_APP_ID
   });
+
+  var currentUser = null;
+  var partialUser = null;
+
   setInitialCredentials();
 
   function trace() {
@@ -134,10 +137,12 @@ angular.module('mpt.cognito-auth')
 
   function login(username, password) {
     trace("CognitoUser.login() --", username, '(password)');
-    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
-      Username: username,
-      Pool: userPool
-    });
+    if (username) {
+      partialUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+        Username: username,
+        Pool: userPool
+      });
+    }
 
     var result = $q.defer();
     result.resolve();
@@ -145,18 +150,31 @@ angular.module('mpt.cognito-auth')
       .then(doLogin)
       .then(getCredentials)
       .then(function() {
-        currentUser = cognitoUser;
+        currentUser = partialUser;
+        partialUser = null;
         trace("authenticate: overall success");
         $rootScope.$broadcast('CognitoUser.loggedIn');
+      })
+      .catch(function(reason) {
+        var oldCurrentUser = currentUser;
+        currentUser = null;
+        if (oldCurrentUser) {
+          $rootScope.$broadcast('CognitoUser.loggedOut');
+        }
+        throw reason;
       });
 
     function doLogin() {
       trace("CognitoUser.login() -- doLogin() --", username, '(password)');
       var result = $q.defer();
-      cognitoUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
-        Username: username,
-        Password: password,
-      }), getAuthCallbacks(result));
+      if (username) {
+        partialUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
+          Username: username,
+          Password: password,
+        }), getAuthCallbacks(result));
+      } else {
+        partialUser.completeNewPasswordChallenge(password, {}, getAuthCallbacks(result));
+      }
       return result.promise;
     }
 
@@ -175,7 +193,7 @@ angular.module('mpt.cognito-auth')
             Logins: logins
           });
           trace("login: success");
-          result.resolve(cognitoUser);
+          result.resolve(partialUser);
         },
         newPasswordRequired: function(attribsGiven, attribsRequired) {
           trace("authenticate: newPasswordRequired, attribsGiven:", attribsGiven, "attribsRequired:", attribsRequired);
@@ -188,9 +206,14 @@ angular.module('mpt.cognito-auth')
       }
     }
 
+    // todo: check when it's necessary to do this
     function getCredentials() {
-      trace("CognitoUser.login() -- getCredentials()");
       var result = $q.defer();
+      if (true) {
+        result.resolve(partialUser);
+        return result.promise;
+      }
+      trace("CognitoUser.login() -- getCredentials()", AWS.config.credentials);
       AWS.config.credentials.get(function(err) {
         if (err) {
           console.log("error:", err);
@@ -199,7 +222,7 @@ angular.module('mpt.cognito-auth')
           return;
         }
         trace("getCredentials: success", AWS.config.credentials);
-        result.resolve(cognitoUser);
+        result.resolve(partialUser);
       });
       return result.promise;
     }
