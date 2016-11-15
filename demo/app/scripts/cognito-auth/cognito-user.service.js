@@ -142,15 +142,11 @@ angular.module('mpt.cognito-auth')
     var result = $q.defer();
     result.resolve();
     return result.promise
-      .then(function() {
-        return doLogin();
-      })
-      .then(function() {
-        return getCredentials();
-      })
+      .then(doLogin)
+      .then(getCredentials)
       .then(function() {
         currentUser = cognitoUser;
-        trace("login: overall success");
+        trace("authenticate: overall success");
         $rootScope.$broadcast('CognitoUser.loggedIn');
       });
 
@@ -160,24 +156,36 @@ angular.module('mpt.cognito-auth')
       cognitoUser.authenticateUser(new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
         Username: username,
         Password: password,
-      }), {
+      }), getAuthCallbacks(result));
+      return result.promise;
+    }
+
+    function getAuthCallbacks(result) {
+      return {
         onFailure: function(err) {
           console.log("cognitoUser.authenticateUser() error:", err);
           result.reject(err);
         },
         onSuccess: function(res) {
-          trace("cognitoUser.authenticateUser() result:", res);
+          trace("cognitoUser.authenticate/complete-challenge result:", res);
           var logins = {};
           logins[cognitoIDP] = res.getIdToken().getJwtToken();
           AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: CognitoAuthConfig.AWS_ID_POOL_ID,
             Logins: logins
           });
-          trace("doLogin: success");
+          trace("login: success");
           result.resolve(cognitoUser);
         },
-      });
-      return result.promise;
+        newPasswordRequired: function(attribsGiven, attribsRequired) {
+          trace("authenticate: newPasswordRequired, attribsGiven:", attribsGiven, "attribsRequired:", attribsRequired);
+          $rootScope.$broadcast('CognitoUser.newPasswordRequired', {
+            attribsGiven: attribsGiven,
+            attribsRequired: attribsRequired
+          });
+          result.reject('new password required');
+        }
+      }
     }
 
     function getCredentials() {
@@ -312,6 +320,7 @@ angular.module('mpt.cognito-auth')
     isLoggedIn: isLoggedIn, // -> true/false
     // message broadcast to root: 'CognitoUser.loggedIn'
     // message broadcast to root: 'CognitoUser.loggedOut'
+    // message broadcast to root: 'CognitoUser.newPasswordRequired', {attribsGiven, attribsRequired}
   };
 
 })
