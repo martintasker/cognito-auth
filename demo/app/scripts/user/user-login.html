@@ -4,7 +4,6 @@
       <input type="text" name="username" ng-model="vm.username" placeholder="User name" required />
       <input type="password" name="password" ng-model="vm.password" placeholder="Password" required />
       <button class="btn btn-primary" ng-disabled="vm.interactionDisabled || form.$invalid" type="submit">Login</button>
-      <div class="btn btn-danger" ng-show="vm.enableRegistration" ng-disabled="vm.interactionDisabled || form.$invalid" ng-click="vm.register()">Register</div>
     </div>
   </fieldset>
 </form>
