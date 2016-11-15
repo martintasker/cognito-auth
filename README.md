@@ -43,8 +43,8 @@ about setting that up via the AWS console.  cognito-auth provides a setup script
 you.  In principle, what you do is:
 
 * edit `setup/lib/config.js` to specify the pool names, app name, role names etc that you want
-* also edit the bucket name: you **must** change it (or not set up buckets at all)
-* `cd setup`, then `node setup`
+* `cd setup`, then `node setup -p -b (bucket-name)`
+  (the `-p` means set up the user pools, the `-b` means set up the named bucket)
 
 The `node setup` script assumes your admin/developer AWS credentials are available, eg from a previous `aws config` command
 on the CLI.
@@ -135,7 +135,7 @@ Use the demo app as a starting-point, but **do not** just copy and tweak it whol
   call the APIs
 * **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
   application: instead, use the built `cognito-auth` library from bower
-* **do not** think of the S3-based configuration (in `node setup`) or file upload (in the UI and app)
+* **do not** think of the S3-based configuration (using `node setup -b`) or file upload (in the UI and app)
   as anything other than toys.  Real S3-based use needs a better UI, and more careful bucket policies.
 * **do not** inflict on your users, the test-style UI of the demo app!
 
@@ -150,7 +150,7 @@ Sensible integration of authentication into app design would include:
   click from the email
 
 This project doesn't attempt that, because it's easy to enough to do in Angular if you have the underlying service
-and the back-end setup.  That service and setup are what this project aims to do well.
+and the back-end setup working.  That service and setup are what this project aims to do well.
 
 ### Fiddling with back-end setup
 
@@ -159,7 +159,8 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 * run `node teardown`, tweak `setup/lib/config.js`, and run `node setup` again: it destroys everything, including
   registered users; so it's good during development, but inappropriate once you've switched to production
 * tweak things manually through the AWS console pages: this might be easiest during production
-* you could write your own scripts, use use `setup` and `teardown` phases tweaked via the `config` option: that might
+* use the `-p` and `-b` flags, on setup and teardown, to only partially set up or tear down
+* write your own scripts, tweak `setup` and `teardown` and teardown to taste, etc: that might
   be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
   right thing for you, well, you'll know.
 
@@ -178,6 +179,7 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 
 ### Issues
 
+* puzzle about when it's necessary to get credentials after authentication
 * S3 application should be more cleanly separated from Cognito auth basics
 * current building and packaging works, but is a bit icky
 
@@ -195,6 +197,9 @@ In no particular order, and with no particular commitments:
 
 ### Scope limitations
 
+The demo UI is not a sensible end-user design and is not intended to be.  It's just for
+demonstrating and testing the `CognitoAuth` service.
+
 The S3 code is essentially a validation of the Cognito auth infrastructure: it is not
 a serious application and does not represent serious application structure.
 
@@ -208,29 +213,31 @@ The key to everything in this `cognito-auth` project is
 The `CognitoAuth` service essentially comprises code adopted and Angularized from the use cases
 in that project's `README`:
 
-* 1, registering -- done (email only)
-* 2, confirming using SMS confirmation code -- done
-* 3, resending SMS confirmation code -- done
-* 4, authentication and establishing session -- done
-* 5, user attributes
-* 6, verify user attribute
-* 7, delete user attribute
-* 8, update user attributes
-* 9, enabling MFA
-* 10, disabling MFA
-* 11, changing password for authenticated user -- done
-* 12, starting and completing forgotten-password flow -- done
-* 13, deleting authenticated user -- done
-* 14, signing out -- done
-* 15, global sign-out
-* 16, retrieve current user from local storage -- done
-* 17, integrating cognito identity with cognito
-* 18, get devices for current user
-* 19, get information about the current device
-* 20, remember a device
-* 21, do not remember a device
-* 22, forget the current device
-* 23, complete admin-initiated registration and login, by giving auth code and changing password -- done
+| use case | description | status |
+| --- | --- | --- |
+| 1 | registering | done (email only) |
+| 2 | confirming using SMS confirmation code | done |
+| 3 | resending SMS confirmation code | done |
+| 4 | authentication and establishing session | done |
+| 5 | user attributes | |
+| 6 | verify user attribute | |
+| 7 | delete user attribute | |
+| 8 | update user attributes | |
+| 9 | enabling MFA | |
+| 10 | disabling MFA | |
+| 11 | changing password for authenticated user | done |
+| 12 | starting and completing forgotten-password flow | done |
+| 13 | deleting authenticated user | done V
+| 14 | signing out | done |
+| 15 | global sign-out | |
+| 16 | retrieve current user from local storage | done |
+| 17 | integrating cognito identity with cognito | |
+| 18 | get devices for current user | |
+| 19 | get information about the current device | |
+| 20 | remember a device | |
+| 21 | do not remember a device | |
+| 22 | forget the current device | |
+| 23 | complete admin-initiated registration and login, by giving auth code and changing password | done |
 
 Useful additional pointers:
 

@@ -33,9 +33,6 @@ function teardownBuckets() {
 }
 
 function deleteBucket() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   return new Promise(function(resolve, reject) {
     bucket.deleteBucket(function(err, data) {
       if (err) {
@@ -48,9 +45,6 @@ function deleteBucket() {
 }
 
 function deleteFiles() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   return new Promise(function(resolve, reject) {
     // note that deleteObjects() does not take '*' as Key
     bucket.deleteObjects({
@@ -71,9 +65,6 @@ function deleteFiles() {
 }
 
 function deletePolicy(policyArn) {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   var params = {
     PolicyArn: policyArn,
   };
@@ -89,9 +80,6 @@ function deletePolicy(policyArn) {
 }
 
 function detachBucketPolicyFromAuthRole(policyArn) {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   var params = {
     RoleName: config.AUTH_ROLE_NAME,
     PolicyArn: policyArn,

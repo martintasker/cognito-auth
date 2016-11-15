@@ -7,16 +7,18 @@ var settings = require('./settings');
 
 AWS.config.region = config.REGION;
 
-var bucket = new AWS.S3({
-  params: {
-    Bucket: config.BUCKET_NAME,
-    region: config.REGION,
-  }
-});
+var bucket = null;
 
 var amazonIAM = new AWS.IAM();
 
-function setupBuckets() {
+function setupBuckets(bucketName) {
+  settings.set('bucketName', bucketName);
+  bucket = new AWS.S3({
+    params: {
+      Bucket: bucketName,
+      region: config.REGION,
+    }
+  });
   return Promise.resolve()
     .then(createBucket)
     .then(attachCORSToBucket)
@@ -27,25 +29,18 @@ function setupBuckets() {
 }
 
 function createBucket() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   return new Promise(function(resolve, reject) {
     bucket.createBucket(function(err, data) {
       if (err) {
         return reject(err);
       }
       console.log("createBucket -> %j", data);
-      settings.set('bucketName', config.BUCKET_NAME);
       return resolve(data);
     });
   });
 }
 
 function attachCORSToBucket() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
   var params = {
     // Bucket: (required value, given to S3 constructor)
@@ -71,9 +66,6 @@ function attachCORSToBucket() {
 }
 
 function createBucketPolicy() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   var policy = {
     Version: "2012-10-17",
     Statement: [{
@@ -84,7 +76,7 @@ function createBucketPolicy() {
         "s3:putObjectACL"
       ],
       Resource: [
-        "arn:aws:s3:::" + config.BUCKET_NAME + "/" + config.UPLOAD_FILE_NAME,
+        "arn:aws:s3:::" + settings.get('bucketName') + "/" + config.UPLOAD_FILE_NAME,
       ]
     }]
   };
@@ -109,9 +101,6 @@ function createBucketPolicy() {
 }
 
 function attachBucketPolicyToAuthRole() {
-  if (!config.phase.buckets) {
-    return Promise.resolve();
-  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#attachRolePolicy-property
     RoleName: config.AUTH_ROLE_NAME,

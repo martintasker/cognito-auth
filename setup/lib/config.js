@@ -13,11 +13,6 @@ function homeDirectory() {
   return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
-// you *must* override the BUCKET_NAME
-exports.BUCKET_NAME = 'test.cognito-auth.example.io';
-exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
-exports.UPLOAD_FILE_NAME = 'file.pdf';
-
 // override any of the below if you want to
 exports.REGION = getDefaultRegion();
 
@@ -31,8 +26,5 @@ exports.POOL_NAME = 'CognitoAuthTestIdentityPool';
 exports.AUTH_ROLE_NAME = 'CognitoAuthTest-AuthRole';
 exports.UNAUTH_ROLE_NAME = 'CognitoAuthTest-UnauthRole';
 
-exports.phase = {
-  pools: true,
-  roles: true,
-  buckets: true,
-};
+exports.AUTH_BUCKET_POLICY_NAME = exports.AUTH_ROLE_NAME + '-WriteBucket';
+exports.UPLOAD_FILE_NAME = 'file.pdf';

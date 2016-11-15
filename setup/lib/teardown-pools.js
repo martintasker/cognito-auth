@@ -37,9 +37,6 @@ function teardownPools() {
 }
 
 function deleteUserPool(userPoolId) {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   console.log("deleteUserPool", userPoolId);
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.deleteUserPool({
@@ -55,9 +52,6 @@ function deleteUserPool(userPoolId) {
 }
 
 function deleteUserPoolClient(userPoolId, userPoolClientId) {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   console.log("deleteUserPoolClient", userPoolClientId);
   return new Promise(function(resolve, reject) {
     cognitoIdentityServiceProvider.deleteUserPoolClient({
@@ -74,9 +68,6 @@ function deleteUserPoolClient(userPoolId, userPoolClientId) {
 }
 
 function deleteIdentityPool(identityPoolId) {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   console.log("deleteIdentityPool", identityPoolId);
   return new Promise(function(resolve, reject) {
     cognitoIdentity.deleteIdentityPool({
@@ -92,9 +83,6 @@ function deleteIdentityPool(identityPoolId) {
 }
 
 function deleteRole(roleName) {
-  if (!config.phase.roles) {
-    return Promise.resolve();
-  }
   var params = {
     RoleName: roleName,
   };

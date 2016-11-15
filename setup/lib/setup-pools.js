@@ -26,9 +26,6 @@ function setupPools() {
 }
 
 function createUserPool() {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPool-property
     PoolName: config.USER_POOL_NAME,
@@ -62,9 +59,6 @@ function createUserPool() {
 }
 
 function createUserPoolClient() {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolClient-property
     // in AWS console-speak, this is an "application" for a user pool; in API-speak, it's a "client"
@@ -90,9 +84,6 @@ function createUserPoolClient() {
 }
 
 function createIdentityPool() {
-  if (!config.phase.pools) {
-    return Promise.resolve();
-  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#createIdentityPool-property
     IdentityPoolName: config.POOL_NAME,
@@ -118,9 +109,6 @@ function createIdentityPool() {
 }
 
 function createAuthRole() {
-  if (!config.phase.roles) {
-    return Promise.resolve();
-  }
   var policy = {
     Version: '2012-10-17',
     Statement: [{
@@ -159,9 +147,6 @@ function createAuthRole() {
 }
 
 function createUnauthRole() {
-  if (!config.phase.roles) {
-    return Promise.resolve();
-  }
   var policy = {
     Version: '2012-10-17',
     Statement: [{
@@ -200,9 +185,6 @@ function createUnauthRole() {
 }
 
 function attachRoles() {
-  if (!config.phase.roles) {
-    return Promise.resolve();
-  }
   var params = {
     // see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#setIdentityPoolRoles-property
     IdentityPoolId: settings.get('identityPoolId'),
