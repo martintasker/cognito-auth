@@ -7,7 +7,6 @@ angular.module('demoApp')
   // public interface
   var self = this;
   self.login = login;
-  self.register = register;
   self.username = "";
   self.password = "";
   self.interactionDisabled = false;
@@ -38,22 +37,6 @@ angular.module('demoApp')
         self.password = '';
         $scope.form.$setPristine();
         $scope.form.$setUntouched();
-        $scope.$emit('User.error', err);
-        $scope.$emit('User.enableInteraction');
-      });
-  }
-
-  function register() {
-    $scope.$emit('User.disableInteraction');
-    CognitoAuth.register(self.username, self.password, self.username, '')
-      .then(function() {
-        return CognitoAuth.login(self.username, self.password);
-      })
-      .then(function(cognitoUser) {
-        $scope.$emit('User.enableInteraction');
-        return cognitoUser;
-      })
-      .catch(function(err) {
         $scope.$emit('User.error', err);
         $scope.$emit('User.enableInteraction');
       });
