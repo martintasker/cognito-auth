@@ -106,33 +106,6 @@ If there are problems, you'll need to troubleshoot.  In the demo app, the `TRACE
 a verbose console log, which helps.  Do double-check that you pasted the settings from your latest run of `node setup`
 into your app.
 
-### Using cognito-auth in your own app
-
-Once you've tested that the back-end setup works, you'll want to integrate the `CognitoAuth` service into your own app.
-
-Use the demo app as a starting-point, but **do not** just copy and tweak it wholesale:
-
-* use `app/scripts/app.js` to see how to inject the module dependency and configure overall
-* use the `CognitoUser.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
-  call the APIs
-* **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
-  application: instead, use the built `cognito-auth` library from bower
-* **do not** think of the S3-based configuration (in `node setup`) or file upload (in the UI and app)
-  as anything other than toys.  Real S3-based use needs a better UI, and more careful bucket policies.
-* **do not** inflict on your users, the test-style UI of the demo app!  Integrate things properly
-  into a nice UI design, maybe using `ui-bootstrap` for dialogs or such.
-
-### Fiddling with back-end setup
-
-If you need to tweak your buckets, pools etc after your initial `node setup`, you have a few options:
-
-* run `node teardown`, tweak `setup/lib/config.js`, and run `node setup` again: it destroys everything, including
-  registered users; so it's good during development, but inappropriate once you've switched to production
-* tweak things manually through the AWS console pages: this might be easiest during production
-* you could write your own scripts, use use `setup` and `teardown` phases tweaked via the `config` option: that might
-  be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
-  right thing for you, well, you'll know.
-
 ### Admin-initiated registration
 
 You can register a user using
@@ -150,6 +123,45 @@ node query
 Admin-initiated registration causes an email to be sent to the specified address, with an initial password.
 You then (attempt to) login in the usual way, with the given username and password.  You are then forced
 to enter a different password (in the **Forced Password** form) to complete the login.
+
+### Using cognito-auth in your own app
+
+Once you've tested that the back-end setup works, you'll want to integrate the `CognitoAuth` service into your own app.
+
+Use the demo app as a starting-point, but **do not** just copy and tweak it wholesale:
+
+* use `app/scripts/app.js` to see how to inject the module dependency and configure overall
+* use the `CognitoUser.` API calls in `app/scripts/user/*.component.js` as illustrations of how to
+  call the APIs
+* **do not** manually inject the individual files from `app/scripts/cognito-auth/*.js` into your
+  application: instead, use the built `cognito-auth` library from bower
+* **do not** think of the S3-based configuration (in `node setup`) or file upload (in the UI and app)
+  as anything other than toys.  Real S3-based use needs a better UI, and more careful bucket policies.
+* **do not** inflict on your users, the test-style UI of the demo app!
+
+Sensible integration of authentication into app design would include:
+
+* only the login and logout functionality easily visible -- login when logged out, and logout when logged in
+* `ui-bootstrap`-driven dialogs for registration, MFA, password and profile changes
+* double-entry for passwords to catch typing mistakes
+* an interactive password strength checker
+* nice integration of login, logout, registration and profile management into the navbar
+* conversion of email registration code into click-through address so you can confirm registration by a simple
+  click from the email
+
+This project doesn't attempt that, because it's easy to enough to do in Angular if you have the underlying service
+and the back-end setup.  That service and setup are what this project aims to do well.
+
+### Fiddling with back-end setup
+
+If you need to tweak your buckets, pools etc after your initial `node setup`, you have a few options:
+
+* run `node teardown`, tweak `setup/lib/config.js`, and run `node setup` again: it destroys everything, including
+  registered users; so it's good during development, but inappropriate once you've switched to production
+* tweak things manually through the AWS console pages: this might be easiest during production
+* you could write your own scripts, use use `setup` and `teardown` phases tweaked via the `config` option: that might
+  be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
+  right thing for you, well, you'll know.
 
 ## Features
 
