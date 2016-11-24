@@ -1,10 +1,10 @@
 'use strict';
 
 var settings = {
-  "userPoolId": "eu-west-1_2mZqlM8LH",
-  "applicationId": "4r317aae4nln2kao09knpurlc2",
-  "identityPoolId": "eu-west-1:b0f2d0d1-615c-44c8-9708-2e71275e96b6",
-  "bucketName": "test.cognito-auth.example.io"
+  "userPoolId": "eu-west-1_X44yuIZJd",
+  "applicationId": "39hrf722hk1n7pa0ldgcbvfuo0",
+  "identityPoolId": "eu-west-1:a3c637d7-ccd9-4405-96f0-522ba7ee5394",
+  "bucketName": "s3-test.databatix.com",
 };
 
 angular.module('demoApp', [
