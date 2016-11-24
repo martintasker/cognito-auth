@@ -227,7 +227,7 @@ in that project's `README`:
 | 10 | disabling MFA | |
 | 11 | changing password for authenticated user | done |
 | 12 | starting and completing forgotten-password flow | done |
-| 13 | deleting authenticated user | done V
+| 13 | deleting authenticated user | done |
 | 14 | signing out | done |
 | 15 | global sign-out | |
 | 16 | retrieve current user from local storage | done |
