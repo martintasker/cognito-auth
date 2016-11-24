@@ -76,8 +76,8 @@ it is a natural application and it is tempting to try that as a complementary pr
 
 | release | key features |
 | --- | --- |
-| 0.6.0 | split pure-JS code from Angular wrapper |
-| 0.5.0 | first release to github |
+| v0.6.0, v0.6.1 | split pure-JS code from Angular wrapper |
+| v0.5.0 | first release to github |
 
 ## How to use
 

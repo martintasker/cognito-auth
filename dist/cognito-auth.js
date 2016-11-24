@@ -55,7 +55,7 @@
 
 	'use strict';
 
-	var CognitoAuth = function(config, eventCallback) {
+	window.CognitoAuth = function(config, eventCallback) {
 
 	  AWS.config.region = config.AWS_REGION;
 
