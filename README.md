@@ -2,11 +2,13 @@
 
 Aims:
 
-* implement Angular-based `CognitoAuth` service with major cognito authentication functionality,
-  based on Angularization of recipes given in the
+* implement an Angular `CognitoAuth` service with major cognito authentication functionality,
+  based on recipes given in the
   [amazon-cognito-identity-js](https://github.com/aws/amazon-cognito-identity-js) README
-* use a uniformly promise-based API to the Angular service (no callbacks)
 * deliver `CognitoAuth` as a ready-to-use library which can be installed in client projects using bower
+* deliver a uniformly promised-based API (no callbacks)
+* underneath the Angular service, deliver a pure JavaScript API, also promise-based, for use in other
+  frameworks, eg React
 * implement a setup script which handles all required AWS setup from the command line with minimal parameterization,
   with code also available for copying and tweaking
 * implement a demo app using Angular and Boostrap, which gives 100% coverage of `CognitoAuth`,
@@ -17,8 +19,65 @@ This provides easy-to-use user management, and yet industrial-strength security.
 credentials are used in client code or seen client-side.  Security is assured by server setup
 (AWS's infrastructure, plus sensible configuration in the setup script in this project).
 
-This is a long document: skip quickly to [using](#how-to-use), [features](#features),
-[background information](#background-information), [building](#how-to-build).
+Contents:
+
+* [features](#features)
+* [how to use](#how-to-use)
+* [background information](#background-information)
+* [building](#how-to-build)
+
+## Features
+
+### Done
+
+* registration using name and email address, confirmation with code (optionally re-sendable), de-registration
+* admin-initiated registration
+* login, session pick-up from local storage on browser refresh, logout
+* send forgotten-password code and reset password (after registered)
+* change password (while logged in)
+* setup script and demo app needed for the above
+* bower-installable `CognitoAuth` service
+* bucket setup and file upload, to demonstrate/validate that the access controls work
+* pure JavaScript layer under Angular service, could be used in other frameworks
+
+### Issues
+
+* pure JavaScript uses ES6 promises without transpilation, reducing browser coverage
+* S3 application should be more cleanly separated from Cognito auth basics
+* current building and packaging works, but is a bit icky
+
+### Backlog
+
+In no particular order, and with no particular commitments:
+
+* email address as alias for username, so no distinct username needed
+* use of phone number as alias, and SMS for sending confirmation code
+* user profile management
+* proper MFA support
+* federated login via Facebook
+* other federated login
+* multi-device management
+* separate out pure JavaScript so it can be used in React without any Angular cruft,
+  and transpile it properly so its promises work on more browsers
+* React-based demo
+
+### Scope limitations
+
+The demo UI is not a sensible end-user design and is not intended to be.  It's just for
+demonstrating and testing the `CognitoAuth` service.
+
+The S3 code is essentially a validation of the Cognito auth infrastructure: it is not
+a serious application and does not represent serious application structure.
+
+Cognito Sync isn't included, and isn't naturally within scope of cognito-auth.  But
+it is a natural application and it is tempting to try that as a complementary project.
+
+### Recent releases
+
+| release | key features |
+| --- | --- |
+| 0.6.0 | split pure-JS code from Angular wrapper |
+| 0.5.0 | first release to github |
 
 ## How to use
 
@@ -32,9 +91,21 @@ In principle, same as any Angular package delivered via bower:
 Note that the AWS Cognito SDK and AWS Cognito Identity SDK dependencies are brought in with the above
 `bower install`: you don't need to include them also in your client project.  This makes your life
 easier, because these SDKs are a bit strangely packaged by Amazon.  However, you will need to include
-the AWS SDK in your project independently (`bower install aws-sdk`).
+the AWS SDK in your project independently (`bower install aws-sdk`), and you'll need to include some
+numerical/crypto dependencies, for which there doesn't appear to be a convenient bower package currently:
 
-Now you'll need to do back-end setup, and to use the `CognitoAuth` APIs in your app.
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cryptico/0.0.1343522940/jsbn.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.6/sjcl.min.js"></script>
+```
+
+Then you'll want to
+
+* [do back-end setup](#back-end-setup)
+* [test the back-end setup](#testing-the-back-end-setup) and perhaps [fiddle with it](#fiddling-with-the-back-end-setup)
+* optionally [register users using admin scripts](#admin-initiated-registration)
+* [use the `CognitoAuth` APIs in your app](#using-cognito-auth-in-your-own-app)
 
 ### Back-end setup
 
@@ -163,48 +234,6 @@ If you need to tweak your buckets, pools etc after your initial `node setup`, yo
 * write your own scripts, tweak `setup` and `teardown` and teardown to taste, etc: that might
   be better than manual tweaks or wholesale teardown.  It's fiddly, and of course you're on your own.  But if it's the
   right thing for you, well, you'll know.
-
-## Features
-
-### Done
-
-* registration using name and email address, confirmation with code (optionally re-sendable), de-registration
-* admin-initiated registration
-* login, session pick-up from local storage on browser refresh, logout
-* send forgotten-password code and reset password (after registered)
-* change password (while logged in)
-* setup script and demo app needed for the above
-* bower-installable `CognitoAuth` service
-* bucket setup and file upload, to demonstrate/validate that the access controls work
-
-### Issues
-
-* puzzle about when it's necessary to get credentials after authentication
-* S3 application should be more cleanly separated from Cognito auth basics
-* current building and packaging works, but is a bit icky
-
-### Backlog
-
-In no particular order, and with no particular commitments:
-
-* email address as alias for username, so no distinct username needed
-* use of phone number as alias, and SMS for sending confirmation code
-* user profile management
-* proper MFA support
-* federated login via Facebook
-* other federated login
-* multi-device management
-
-### Scope limitations
-
-The demo UI is not a sensible end-user design and is not intended to be.  It's just for
-demonstrating and testing the `CognitoAuth` service.
-
-The S3 code is essentially a validation of the Cognito auth infrastructure: it is not
-a serious application and does not represent serious application structure.
-
-Cognito Sync isn't included, and isn't naturally within scope of cognito-auth.  But
-it is a natural application and it is tempting to try that as a complementary project.
 
 ## Background information
 
